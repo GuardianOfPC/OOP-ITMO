@@ -11,14 +11,16 @@ namespace Isu.Tests
         [SetUp]
         public void Setup()
         {
-            //TODO: implement
-            _isuService = null;
+            _isuService = new IsuService();
         }
 
         [Test]
         public void AddStudentToGroup_StudentHasGroupAndGroupContainsStudent()
         {
-            Assert.Fail();
+            Group group = _isuService.AddGroup("M3109");
+            Student alexey = _isuService.AddStudent(group, "Alexey");
+            Assert.True(alexey.Group == group);
+            Assert.True(group.Students.Contains(alexey));
         }
 
         [Test]
@@ -26,7 +28,11 @@ namespace Isu.Tests
         {
             Assert.Catch<IsuException>(() =>
             {
-                
+                Group group = _isuService.AddGroup("M3109");
+                for (int i = 0; i < 40; ++i)
+                {
+                    _isuService.AddStudent(group, "test");
+                }
             });
         }
 
@@ -35,7 +41,7 @@ namespace Isu.Tests
         {
             Assert.Catch<IsuException>(() =>
             {
-
+                _isuService.AddGroup("123456789");
             });
         }
 
@@ -44,7 +50,13 @@ namespace Isu.Tests
         {
             Assert.Catch<IsuException>(() =>
             {
+                Group group1 = _isuService.AddGroup("M3109");
+                Group group2 = _isuService.AddGroup("M3100");
+                Student alexey = _isuService.AddStudent(group1, "Alexey");
 
+                _isuService.ChangeStudentGroup(alexey, group2);
+                
+                Assert.True(group1.Students.Contains(alexey));
             });
         }
     }
