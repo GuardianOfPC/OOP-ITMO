@@ -8,22 +8,18 @@ namespace Isu.Services
         private readonly List<Group> _groups = new ();
         public Group AddGroup(string name)
         {
-            Group group = new (name);
+            Group group = new Group.GroupBuilder(name).Build();
             _groups.Add(group);
-            return group;
+            Group outGroup = group.ToBuilder().WithName(name).Build();
+            return outGroup;
         }
 
         public Student AddStudent(Group group, string name)
         {
-            if (group.StudentsCount > 30)
-            {
-                throw new IsuException("Group limit exceeded");
-            }
-
-            Student student = new (group, name);
-            group.Students.Add(student);
-            group.StudentsCount++;
-            return student;
+            Student student = new Student.StudentBuilder(name).WithGroup(group).Build();
+            group.AddStudentToGroup(student);
+            Student outStudent = student.ToBuilder().WithGroup(group).Build();
+            return outStudent;
         }
 
         public Student GetStudent(int id)
@@ -48,7 +44,7 @@ namespace Isu.Services
             {
                 foreach (Student student in group.Students)
                 {
-                    if (student.Name == name)
+                    if (student.GetName() == name)
                     {
                         return student;
                     }
@@ -62,9 +58,9 @@ namespace Isu.Services
         {
             foreach (Group group in _groups)
             {
-                if (group.GroupName == groupName)
+                if (group.GetGroupName() == groupName)
                 {
-                    return group.Students;
+                    return (List<Student>)group.Students;
                 }
             }
 
@@ -75,9 +71,9 @@ namespace Isu.Services
         {
             foreach (Group group in _groups)
             {
-                if (group.CourseNumber == courseNumber)
+                if (group.GetCourseNumber() == courseNumber)
                 {
-                    return group.Students;
+                    return (List<Student>)group.Students;
                 }
             }
 
@@ -88,7 +84,7 @@ namespace Isu.Services
         {
             foreach (Group group in _groups)
             {
-                if (group.GroupName == groupName)
+                if (group.GetGroupName() == groupName)
                 {
                     return group;
                 }
@@ -102,7 +98,7 @@ namespace Isu.Services
             List<Group> groups = new ();
             foreach (Group group in _groups)
             {
-                if (group.CourseNumber == courseNumber)
+                if (group.GetCourseNumber() == courseNumber)
                 {
                     groups.Add(group);
                 }
@@ -113,18 +109,19 @@ namespace Isu.Services
 
         public void ChangeStudentGroup(Student student, Group newGroup)
         {
-            foreach (Group group in _groups)
-            {
-                group.Students.Remove(student);
-                AddStudent(newGroup, student.Name);
-            }
-
-            if (student.Group == newGroup)
+            Group oldGroup = student.GetGroup();
+            if (oldGroup.Equals(newGroup))
             {
                 throw new IsuException("Same group");
             }
 
-            if (student.Group != newGroup)
+            foreach (Group group in _groups)
+            {
+                group.RemoveStudent(student);
+                AddStudent(newGroup, student.GetName());
+            }
+
+            if (!oldGroup.Equals(newGroup))
             {
                 throw new IsuException("Group didn't change");
             }

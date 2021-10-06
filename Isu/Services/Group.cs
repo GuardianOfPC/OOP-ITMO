@@ -5,23 +5,95 @@ namespace Isu.Services
 {
     public class Group
     {
-        public Group(string name)
+        private readonly string _groupName;
+        private readonly CourseNumber _courseNumber;
+        private readonly List<Student> _students;
+
+        private Group(string name, CourseNumber courseNumber, List<Student> students)
         {
-            if (name.Length == 5 && name[0] == 'M')
-            {
-                 GroupName = name;
-                 Students = new List<Student>();
-                 CourseNumber.Number = name[2];
-            }
-            else
-            {
-                throw new IsuException("Wrong Name");
-            }
+            _groupName = name;
+            _courseNumber = courseNumber;
+            _students = new List<Student>();
+            _students = students;
         }
 
-        public int StudentsCount { get; set; }
-        public CourseNumber CourseNumber { get; } = new ();
-        public List<Student> Students { get; }
-        public string GroupName { get; set; }
+        public IReadOnlyList<Student> Students => _students;
+
+        public string GetGroupName()
+        {
+            return _groupName;
+        }
+
+        public CourseNumber GetCourseNumber()
+        {
+            return _courseNumber;
+        }
+
+        public void RemoveStudent(Student student)
+        {
+            _students.Remove(student);
+        }
+
+        public void AddStudentToGroup(Student student)
+        {
+            if (_students.Count > 30)
+            {
+                throw new IsuException("Group limit exceeded");
+            }
+
+            _students.Add(student);
+        }
+
+        public GroupBuilder ToBuilder()
+        {
+            GroupBuilder groupBuilder = new (_groupName);
+            groupBuilder.WithCourseNumber(_courseNumber);
+            groupBuilder.WithStudents(_students);
+            return groupBuilder;
+        }
+
+        public class GroupBuilder
+        {
+            private string _groupName;
+            private CourseNumber _courseNumber;
+            private List<Student> _students;
+
+            public GroupBuilder(string name)
+            {
+                if (name.Length != 5 && !name.Contains("M3"))
+                {
+                    throw new IsuException("Wrong Group Name");
+                }
+
+                _courseNumber = (CourseNumber)name[1];
+
+                _groupName = name;
+                _students = new List<Student>();
+            }
+
+            public GroupBuilder WithName(string name)
+            {
+                _groupName = name;
+                return this;
+            }
+
+            public GroupBuilder WithCourseNumber(CourseNumber courseNumber)
+            {
+                _courseNumber = courseNumber;
+                return this;
+            }
+
+            public GroupBuilder WithStudents(List<Student> students)
+            {
+                _students = students;
+                return this;
+            }
+
+            public Group Build()
+            {
+                Group finalGroup = new (_groupName, _courseNumber, _students);
+                return finalGroup;
+            }
+        }
     }
 }

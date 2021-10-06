@@ -1,27 +1,17 @@
-﻿using Isu.Tools;
-
-namespace Isu.Services
+﻿namespace Isu.Services
 {
-    public class CourseNumber
+    public enum CourseNumber
     {
-        private const int MinCourseNumber = 1;
-        private const int MaxCourseNumber = 4;
-        private int _number;
+        /// <summary>First Year</summary>
+        First = 1,
 
-        public int Number
-        {
-            get => _number;
-            set
-            {
-                if (value >= MinCourseNumber | value <= MaxCourseNumber)
-                {
-                    _number = value;
-                }
-                else
-                {
-                    throw new IsuException(message: "You can't insert CourseNumber other then 1 - 4");
-                }
-            }
-        }
+        /// <summary>Second Year</summary>
+        Second,
+
+        /// <summary>Third Year</summary>
+        Third,
+
+        /// <summary>Fourth Year</summary>
+        Fourth,
     }
 }
