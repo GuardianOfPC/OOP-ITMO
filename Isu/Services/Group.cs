@@ -5,12 +5,18 @@ namespace Isu.Services
 {
     public class Group
     {
+        private readonly int _maxStudentCount = 30;
         private readonly string _groupName;
         private readonly CourseNumber _courseNumber;
         private readonly List<Student> _students;
 
         private Group(string name, CourseNumber courseNumber, List<Student> students)
         {
+            if (name.Length != 5 && !name.Contains("M3"))
+            {
+                throw new IsuException("Wrong Group Name");
+            }
+
             _groupName = name;
             _courseNumber = courseNumber;
             _students = new List<Student>();
@@ -24,6 +30,11 @@ namespace Isu.Services
             return _groupName;
         }
 
+        public int GetMaxStudentsCount()
+        {
+            return _maxStudentCount;
+        }
+
         public CourseNumber GetCourseNumber()
         {
             return _courseNumber;
@@ -31,7 +42,8 @@ namespace Isu.Services
 
         public GroupBuilder ToBuilder()
         {
-            GroupBuilder groupBuilder = new (_groupName);
+            GroupBuilder groupBuilder = new ();
+            groupBuilder.WithName(_groupName);
             groupBuilder.WithCourseNumber(_courseNumber);
             groupBuilder.WithStudents(_students);
             return groupBuilder;
@@ -39,23 +51,9 @@ namespace Isu.Services
 
         public class GroupBuilder
         {
-            private const int MaxStudentCount = 30;
             private string _groupName;
             private CourseNumber _courseNumber;
-            private List<Student> _students;
-
-            public GroupBuilder(string name)
-            {
-                if (name.Length != 5 && !name.Contains("M3"))
-                {
-                    throw new IsuException("Wrong Group Name");
-                }
-
-                _courseNumber = (CourseNumber)name[1];
-
-                _groupName = name;
-                _students = new List<Student>();
-            }
+            private List<Student> _students = new ();
 
             public GroupBuilder WithName(string name)
             {
@@ -72,23 +70,6 @@ namespace Isu.Services
             public GroupBuilder WithStudents(List<Student> students)
             {
                 _students = students;
-                return this;
-            }
-
-            public GroupBuilder AddStudentToGroup(Student student)
-            {
-                if (_students.Count > MaxStudentCount)
-                {
-                    throw new IsuException("Students exceeded");
-                }
-
-                _students.Add(student);
-                return this;
-            }
-
-            public GroupBuilder RemoveStudent(Student student)
-            {
-                _students.Remove(student);
                 return this;
             }
 

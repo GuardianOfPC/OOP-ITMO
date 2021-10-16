@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Isu.Tools;
 
 namespace Isu.Services
@@ -8,7 +9,7 @@ namespace Isu.Services
         private readonly List<Group> _groups = new ();
         public Group AddGroup(string name)
         {
-            Group group = new Group.GroupBuilder(name).Build();
+            Group group = new Group.GroupBuilder().WithName(name).Build();
             _groups.Add(group);
             Group outGroup = group.ToBuilder().WithName(name).Build();
             return outGroup;
@@ -16,19 +17,26 @@ namespace Isu.Services
 
         public Student AddStudent(Group group, string name)
         {
-            Student student = new Student.StudentBuilder(name).WithGroup(group).Build();
+            if (group.Students.Count > group.GetMaxStudentsCount())
+            {
+                throw new IsuException("Students exceeded");
+            }
+
+            Student student = new Student.StudentBuilder().WithName(name).WithGroup(group).Build();
             _groups.Remove(group);
-            _groups.Add(group.ToBuilder().AddStudentToGroup(student).Build());
+            var oldStudents = (List<Student>)group.Students;
+            oldStudents.Add(student);
+            _groups.Add(group.ToBuilder().WithStudents(oldStudents).Build());
             return student;
         }
 
-        public Student GetStudent(int id)
+        public Student GetStudent(Guid id)
         {
             foreach (Group group in _groups)
             {
                 foreach (Student student in group.Students)
                 {
-                    if (Student.GetId() == id)
+                    if (student.Id == id)
                     {
                         return student;
                     }
@@ -110,17 +118,23 @@ namespace Isu.Services
         public void ChangeStudentGroup(Student student, Group newGroup)
         {
             Group oldGroup = student.GetGroup();
+
             if (oldGroup.Equals(newGroup))
             {
                 throw new IsuException("Same group");
             }
 
             _groups.Remove(oldGroup);
-            Group temp = oldGroup.ToBuilder().RemoveStudent(student).Build();
+            _groups.Remove(newGroup);
+
+            var oldStudents = (List<Student>)oldGroup.Students;
+            oldStudents.Remove(student);
+            Group temp = oldGroup.ToBuilder().WithStudents(oldStudents).Build();
             _groups.Add(temp);
 
-            _groups.Remove(newGroup);
-            Group temp1 = newGroup.ToBuilder().AddStudentToGroup(student).Build();
+            var newStudents = (List<Student>)newGroup.Students;
+            newStudents.Add(student);
+            Group temp1 = newGroup.ToBuilder().WithStudents(newStudents).Build();
             _groups.Add(temp1);
         }
     }

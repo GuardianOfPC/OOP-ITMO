@@ -1,23 +1,21 @@
-﻿namespace Isu.Services
+﻿using System;
+
+namespace Isu.Services
 {
     public class Student
     {
-        private static int _id = 100000;
+        private readonly Guid _id;
         private readonly string _name;
         private readonly Group _group;
 
         private Student(string name, Group group)
         {
-            _id++;
+            _id = Guid.NewGuid();
             _name = name;
             _group = group;
         }
 
-        public static int GetId()
-        {
-            return _id;
-        }
-
+        public Guid Id => _id;
         public string GetName()
         {
             return _name;
@@ -30,7 +28,7 @@
 
         public StudentBuilder ToBuilder()
         {
-            StudentBuilder studentBuilder = new StudentBuilder(_name).WithGroup(_group);
+            StudentBuilder studentBuilder = new StudentBuilder().WithGroup(_group).WithName(_name);
             return studentBuilder;
         }
 
@@ -38,11 +36,6 @@
         {
             private string _name;
             private Group _group;
-
-            public StudentBuilder(string name)
-            {
-                _name = name;
-            }
 
             public StudentBuilder WithName(string name)
             {

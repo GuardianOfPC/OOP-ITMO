@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Isu.Services
 {
@@ -7,7 +8,7 @@ namespace Isu.Services
         Group AddGroup(string name);
         Student AddStudent(Group group, string name);
 
-        Student GetStudent(int id);
+        Student GetStudent(Guid id);
         Student FindStudent(string name);
         List<Student> FindStudents(string groupName);
         List<Student> FindStudents(CourseNumber courseNumber);
