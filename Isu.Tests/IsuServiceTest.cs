@@ -21,14 +21,15 @@ namespace Isu.Tests
             Group group = _isuService.AddGroup("M3109");
             Student alexey = _isuService.AddStudent(group, "Alexey");
             Assert.True(alexey.GetGroup().Equals(group));
+            Assert.True(group.Students.Contains(alexey));
         }
 
         [Test]
         public void ReachMaxStudentPerGroup_ThrowException()
-        {
+        {   
+            Group group = _isuService.AddGroup("M3109");
             Assert.Catch<IsuException>(() =>
             {
-                Group group = _isuService.AddGroup("M3109");
                 for (int i = 0; i < 40; ++i)
                 {
                     _isuService.AddStudent(group, "test");
@@ -48,16 +49,14 @@ namespace Isu.Tests
         [Test]
         public void TransferStudentToAnotherGroup_GroupChanged()
         {
-            Assert.Catch<IsuException>(() =>
-            {
-                Group group1 = _isuService.AddGroup("M3109");
-                Group group2 = _isuService.AddGroup("M3100");
-                Student alexey = _isuService.AddStudent(group1, "Alexey");
+            Group group1 = _isuService.AddGroup("M3109");
+            Group group2 = _isuService.AddGroup("M3100");
+            Student alexey = _isuService.AddStudent(group1, "Alexey");
 
-                _isuService.ChangeStudentGroup(alexey, group2);
-                
-                Assert.True(group1.Students.Contains(alexey));
-            });
+            _isuService.ChangeStudentGroup(alexey, group2);
+            
+            Assert.False(group1.Students.Contains(alexey));
+            Assert.True(group2.Students.Contains(alexey));
         }
     }
-}
+} 

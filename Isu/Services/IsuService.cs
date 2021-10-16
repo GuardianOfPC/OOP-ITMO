@@ -17,9 +17,9 @@ namespace Isu.Services
         public Student AddStudent(Group group, string name)
         {
             Student student = new Student.StudentBuilder(name).WithGroup(group).Build();
-            group.AddStudentToGroup(student);
-            Student outStudent = student.ToBuilder().WithGroup(group).Build();
-            return outStudent;
+            _groups.Remove(group);
+            _groups.Add(group.ToBuilder().AddStudentToGroup(student).Build());
+            return student;
         }
 
         public Student GetStudent(int id)
@@ -115,16 +115,13 @@ namespace Isu.Services
                 throw new IsuException("Same group");
             }
 
-            foreach (Group group in _groups)
-            {
-                group.RemoveStudent(student);
-                AddStudent(newGroup, student.GetName());
-            }
+            _groups.Remove(oldGroup);
+            Group temp = oldGroup.ToBuilder().RemoveStudent(student).Build();
+            _groups.Add(temp);
 
-            if (!oldGroup.Equals(newGroup))
-            {
-                throw new IsuException("Group didn't change");
-            }
+            _groups.Remove(newGroup);
+            Group temp1 = newGroup.ToBuilder().AddStudentToGroup(student).Build();
+            _groups.Add(temp1);
         }
     }
 }

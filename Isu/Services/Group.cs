@@ -29,21 +29,6 @@ namespace Isu.Services
             return _courseNumber;
         }
 
-        public void RemoveStudent(Student student)
-        {
-            _students.Remove(student);
-        }
-
-        public void AddStudentToGroup(Student student)
-        {
-            if (_students.Count > 30)
-            {
-                throw new IsuException("Group limit exceeded");
-            }
-
-            _students.Add(student);
-        }
-
         public GroupBuilder ToBuilder()
         {
             GroupBuilder groupBuilder = new (_groupName);
@@ -54,6 +39,7 @@ namespace Isu.Services
 
         public class GroupBuilder
         {
+            private const int MaxStudentCount = 30;
             private string _groupName;
             private CourseNumber _courseNumber;
             private List<Student> _students;
@@ -86,6 +72,23 @@ namespace Isu.Services
             public GroupBuilder WithStudents(List<Student> students)
             {
                 _students = students;
+                return this;
+            }
+
+            public GroupBuilder AddStudentToGroup(Student student)
+            {
+                if (_students.Count > MaxStudentCount)
+                {
+                    throw new IsuException("Students exceeded");
+                }
+
+                _students.Add(student);
+                return this;
+            }
+
+            public GroupBuilder RemoveStudent(Student student)
+            {
+                _students.Remove(student);
                 return this;
             }
 
