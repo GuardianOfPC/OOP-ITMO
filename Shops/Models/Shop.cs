@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Shops.Services
+namespace Shops.Models
 {
     public class Shop
     {
@@ -12,7 +12,6 @@ namespace Shops.Services
             Id = Guid.NewGuid();
             Name = name;
             Address = address;
-            _products = new List<Product>();
             _products = products;
         }
 
@@ -27,13 +26,16 @@ namespace Shops.Services
         public ShopBuilder ToBuilder()
         {
             ShopBuilder shopBuilder = new ();
-            shopBuilder.WithName(Name).WithAddress(Address).WithProducts(_products);
+            shopBuilder
+                .WithName(Name)
+                .WithAddress(Address)
+                .WithProducts(_products);
             return shopBuilder;
         }
 
         public class ShopBuilder
         {
-            private List<Product> _products;
+            private List<Product> _products = new ();
             private string _name;
             private string _address;
 
