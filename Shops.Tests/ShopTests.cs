@@ -30,6 +30,7 @@ namespace Shops.Tests
             Product product = _shopService.RegisterProductAtShop("Молоко", shop);
             _shopService.DeliveryToShop(shop, "Молоко", 10);
             var productsList = (List<Product>)shop.Products;
+            // Assert.True(productsList.Find(match => match.Name == product.Name).Quantity == 10);
             foreach (Product current in productsList)
             {
                 if (current.Name == product.Name)
@@ -75,7 +76,7 @@ namespace Shops.Tests
             _shopService.DeliveryToShop(shop3, "Молоко", 10);
             _shopService.SetProductPrice(shop3, "Молоко",40);
 
-            Shop goodShop = _shopService.GoodBuy("Молоко", 10);
+            Shop goodShop = _shopService.BestPossibleBuy("Молоко", 10);
             Assert.True(goodShop.Name == "Dixy");
         }
 
@@ -112,6 +113,39 @@ namespace Shops.Tests
                 }
             }
             Assert.True(customer.Money == 260);
+        }
+
+        [Test]
+        public void BuyMultipleProductsFromShop_ProductsBoughtCustomerHasChangedMoney()
+        {
+            Shop shop = _shopService.AddShop("Ozon", "Moscow City");
+
+            Product product1 = _shopService.RegisterProductAtShop("Молоко", shop);
+            shop = _shopService.DeliveryToShop(shop, "Молоко", 10);
+            shop = _shopService.SetProductPrice(shop, "Молоко", 100);
+
+            Product product2 = _shopService.RegisterProductAtShop("Сыр", shop);
+            shop = _shopService.DeliveryToShop(shop, "Сыр", 5);
+            shop = _shopService.SetProductPrice(shop, "Сыр", 100);
+
+            Dictionary<string, int> productsDictionary = new ();
+            productsDictionary.Add(product1.Name, 5);
+            productsDictionary.Add(product2.Name, 2);
+            
+            Customer customer = new Customer.CustomerBuilder()
+                .WithName("Alexey")
+                .WithMoney(1000)
+                .Build();
+
+            customer = _shopService.MultipleBuy(customer, shop, productsDictionary);
+            foreach (Product current in shop.Products)
+            {
+                if (product1.Name == current.Name)
+                {
+                    Assert.True(current.Quantity == 5);
+                }
+            }
+            Assert.True(customer.Money == 500);
         }
     }
 }
