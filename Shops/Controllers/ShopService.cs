@@ -161,12 +161,12 @@ namespace Shops.Controllers
 
         public Customer MultipleBuy(Customer customer, Shop shop, Dictionary<string, int> productsDictionary)
         {
-            int finalMoney = default;
+            int finalMoney = customer.Money;
 
             foreach (KeyValuePair<string, int> keyValue in productsDictionary)
             {
                 customer = Buy(customer, shop, keyValue.Key, keyValue.Value);
-                finalMoney += customer.Money;
+                finalMoney -= customer.Money;
             }
 
             customer.ToBuild().WithMoney(finalMoney).Build();
