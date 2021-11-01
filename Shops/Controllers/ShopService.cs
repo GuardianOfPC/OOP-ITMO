@@ -161,45 +161,16 @@ namespace Shops.Controllers
 
         public Customer MultipleBuy(Customer customer, Shop shop, Dictionary<string, int> productsDictionary)
         {
-            int currentMoney = customer.Money;
-            _shops.Remove(shop);
-            var productList = (List<Product>)shop.Products;
+            int finalMoney = default;
+
             foreach (KeyValuePair<string, int> keyValue in productsDictionary)
             {
-                foreach (Product currProduct in shop.Products.ToList())
-                {
-                    if (currProduct.Name == keyValue.Key)
-                    {
-                        if (currProduct.Quantity < keyValue.Value)
-                        {
-                            throw new ShopException("Insufficient products");
-                        }
-
-                        if (currentMoney < (currProduct.Price * keyValue.Value))
-                        {
-                            throw new ShopException("Not enough money");
-                        }
-
-                        productList.Remove(currProduct);
-                        Product newProd = currProduct
-                            .ToBuilder()
-                            .WithQuantity(currProduct.Quantity - keyValue.Value).Build();
-                        productList.Add(newProd);
-                        currentMoney -= currProduct.Price * keyValue.Value;
-                    }
-                }
-
-                shop.ToBuilder()
-                    .WithProducts(productList)
-                    .Build();
-                _shops.Add(shop);
-                customer = customer.ToBuild()
-                    .WithMoney(currentMoney)
-                    .Build();
-                return customer;
+                customer = Buy(customer, shop, keyValue.Key, keyValue.Value);
+                finalMoney += customer.Money;
             }
 
-            throw new ShopException("No such product");
+            customer.ToBuild().WithMoney(finalMoney).Build();
+            return customer;
         }
     }
 }

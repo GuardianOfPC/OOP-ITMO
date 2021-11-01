@@ -144,8 +144,13 @@ namespace Shops.Tests
                 {
                     Assert.True(current.Quantity == 5);
                 }
+
+                if (product2.Name == current.Name)
+                {
+                    Assert.True(current.Quantity == 3);
+                }
             }
-            Assert.True(customer.Money == 500);
+            Assert.True(customer.Money == 300);
         }
     }
 }
