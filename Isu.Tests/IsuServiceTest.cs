@@ -1,4 +1,5 @@
 using System.Linq;
+using Isu.Models;
 using Isu.Services;
 using Isu.Tools;
 using NUnit.Framework;
@@ -20,7 +21,7 @@ namespace Isu.Tests
         {
             Group group = _isuService.AddGroup("M3109");
             Student alexey = _isuService.AddStudent(group, "Alexey");
-            Assert.True(alexey.GetGroup().Equals(group));
+            Assert.True(alexey.Group.Equals(group));
             Assert.True(group.Students.Contains(alexey));
         }
 

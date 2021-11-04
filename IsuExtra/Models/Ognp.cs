@@ -1,27 +1,30 @@
-﻿using System.Collections.Generic;
-
-namespace IsuExtra.Models
+﻿namespace IsuExtra.Models
 {
     public class Ognp
     {
-        private readonly string _name;
-
-        private Ognp(string name)
+        private Ognp(string name, MegaFaculty megaFaculty)
         {
-            _name = name;
+            Name = name;
+            MegaFaculty = megaFaculty;
         }
+
+        public string Name { get; }
+
+        public MegaFaculty MegaFaculty { get; }
 
         public OgnpBuilder ToBuilder()
         {
             OgnpBuilder newOgnp = new ();
             newOgnp
-                .WithName(_name);
+                .WithName(Name)
+                .WithMegaFaculty(MegaFaculty);
             return newOgnp;
         }
 
         public class OgnpBuilder
         {
             private string _name;
+            private MegaFaculty _megaFaculty;
 
             public OgnpBuilder WithName(string name)
             {
@@ -29,9 +32,15 @@ namespace IsuExtra.Models
                 return this;
             }
 
+            public OgnpBuilder WithMegaFaculty(MegaFaculty megaFaculty)
+            {
+                _megaFaculty = megaFaculty;
+                return this;
+            }
+
             public Ognp Build()
             {
-                Ognp finalOgnp = new (_name);
+                Ognp finalOgnp = new (_name, _megaFaculty);
                 return finalOgnp;
             }
         }

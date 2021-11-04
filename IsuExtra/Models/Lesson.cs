@@ -1,20 +1,22 @@
-﻿using Isu.Services;
+﻿using System;
 
 namespace IsuExtra.Models
 {
     public class Lesson
     {
-        private readonly Group _group;
-        private readonly string _teacher;
-        private readonly int _classRoomNumber;
-        private readonly Ognp _ognp;
-
-        private Lesson(Group group, string teacher, int classRoomNumber, Ognp ognp)
+        private Lesson(StreamGroup group, string teacher, int classRoomNumber, Ognp ognp, TimeSpan timeSpan)
         {
-            _group = group;
-            _teacher = teacher;
-            _classRoomNumber = classRoomNumber;
-            _ognp = ognp;
+            Group = group;
+            Teacher = teacher;
+            ClassRoomNumber = classRoomNumber;
+            Ognp = ognp;
+            Time = timeSpan;
         }
+
+        public StreamGroup Group { get; }
+        public string Teacher { get; }
+        public int ClassRoomNumber { get; }
+        public Ognp Ognp { get; }
+        public TimeSpan Time { get; }
     }
 }
