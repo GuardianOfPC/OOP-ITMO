@@ -5,11 +5,13 @@ namespace Isu.Models
 {
     public class Group
     {
+        private readonly List<Student> _students;
         private Group(string name, CourseNumber courseNumber, List<Student> students, int maxStudentCount)
         {
+            if (name.Length != 5) throw new IsuException("Wrong group name");
             GroupName = name;
             CourseNumber = courseNumber;
-            Students = new List<Student>(students);
+            _students = new List<Student>(students);
             MaxStudentCount = maxStudentCount;
         }
 
@@ -19,7 +21,7 @@ namespace Isu.Models
 
         public CourseNumber CourseNumber { get; }
 
-        public IReadOnlyList<Student> Students { get; }
+        public IReadOnlyList<Student> Students => _students;
 
         public GroupBuilder ToBuilder()
         {

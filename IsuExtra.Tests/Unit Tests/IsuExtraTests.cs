@@ -25,9 +25,11 @@ namespace IsuExtra.Tests.Unit_Tests
         {
             Ognp ognp = _isuExtra.AddOgnpToRegister("CyberSec", MegaFaculty.Ctu );
             Student student = new Student.StudentBuilder().WithName("Alex").Build();
+            GroupWrapper groupWrapper = new GroupWrapper.GroupWrapperBuilder().Build();
             StreamStudent streamStudent = new StreamStudent.StreamStudentBuilder()
                 .WithStudent(student)
                 .WithMegaFaculty(MegaFaculty.Tint)
+                .WithGroupWrapper(groupWrapper)
                 .Build();
             StreamGroup streamGroup = new StreamGroup.StreamGroupBuilder().WithOgnp(ognp).Build();
             _isuExtra.StudentOgnpEntry(streamStudent, streamGroup);
@@ -39,9 +41,11 @@ namespace IsuExtra.Tests.Unit_Tests
         {
             Ognp ognp = _isuExtra.AddOgnpToRegister("CyberSec", MegaFaculty.Ctu );
             Student student = new Student.StudentBuilder().WithName("Alex").Build();
+            GroupWrapper groupWrapper = new GroupWrapper.GroupWrapperBuilder().Build();
             StreamStudent streamStudent = new StreamStudent.StreamStudentBuilder()
                 .WithStudent(student)
                 .WithMegaFaculty(MegaFaculty.Tint)
+                .WithGroupWrapper(groupWrapper)
                 .Build();
             StreamGroup streamGroup = new StreamGroup.StreamGroupBuilder().WithOgnp(ognp).Build();
             _isuExtra.StudentOgnpEntry(streamStudent, streamGroup);
@@ -67,20 +71,24 @@ namespace IsuExtra.Tests.Unit_Tests
         public void GetStreamStudentsListFromStreamGroup_StreamStudentsListReturned()
         {
             Ognp ognp = _isuExtra.AddOgnpToRegister("CyberSec", MegaFaculty.Ctu );
+            GroupWrapper groupWrapper = new GroupWrapper.GroupWrapperBuilder().Build();
             Student student1 = new Student.StudentBuilder().WithName("Alex").Build();
             StreamStudent streamStudent1 = new StreamStudent.StreamStudentBuilder()
                 .WithStudent(student1)
                 .WithMegaFaculty(MegaFaculty.Tint)
+                .WithGroupWrapper(groupWrapper)
                 .Build();
             Student student2 = new Student.StudentBuilder().WithName("Bob").Build();
             StreamStudent streamStudent2 = new StreamStudent.StreamStudentBuilder()
                 .WithStudent(student2)
                 .WithMegaFaculty(MegaFaculty.Tint)
+                .WithGroupWrapper(groupWrapper)
                 .Build();
             Student student3 = new Student.StudentBuilder().WithName("Robin").Build();
             StreamStudent streamStudent3 = new StreamStudent.StreamStudentBuilder()
                 .WithStudent(student3)
                 .WithMegaFaculty(MegaFaculty.Tint)
+                .WithGroupWrapper(groupWrapper)
                 .Build();
             StreamGroup streamGroup = new StreamGroup.StreamGroupBuilder()
                 .WithOgnp(ognp)
@@ -96,30 +104,25 @@ namespace IsuExtra.Tests.Unit_Tests
         public void GetStreamStudentsWithoutOgnp_StreamStudentsListReturned()
         {
             Student student1 = new Student.StudentBuilder().WithName("Alex").Build();
-            // StreamStudent streamStudent1 = new StreamStudent.StreamStudentBuilder()
-            //     .WithStudent(student1)
-            //     .WithMegaFaculty(MegaFaculty.Tint)
-            //     .Build();
+            StreamStudent streamStudent1 = new StreamStudent.StreamStudentBuilder()
+                .WithStudent(student1)
+                .WithMegaFaculty(MegaFaculty.Tint)
+                .Build();
             Student student2 = new Student.StudentBuilder().WithName("Bob").Build();
-            // StreamStudent streamStudent2 = new StreamStudent.StreamStudentBuilder()
-            //     .WithStudent(student2)
-            //     .WithMegaFaculty(MegaFaculty.Tint)
-            //     .Build();
+            StreamStudent streamStudent2 = new StreamStudent.StreamStudentBuilder()
+                .WithStudent(student2)
+                .WithMegaFaculty(MegaFaculty.Tint)
+                .Build();
             Student student3 = new Student.StudentBuilder().WithName("Robin").Build();
-            // StreamStudent streamStudent3 = new StreamStudent.StreamStudentBuilder()
-            //     .WithStudent(student3)
-            //     .WithMegaFaculty(MegaFaculty.Tint)
-            //     .Build();
-            var tmp = new List<Student> {student1, student2, student3};
-            Group group = new Group.GroupBuilder().WithName("M3109").WithStudents(tmp).Build();
-            GroupWrapper groupWrapper = new GroupWrapper.GroupWrapperBuilder().WithGroup(group).Build();
+            StreamStudent streamStudent3 = new StreamStudent.StreamStudentBuilder()
+                .WithStudent(student3)
+                .WithMegaFaculty(MegaFaculty.Tint)
+                .WithOgnpCount(1)
+                .Build();
+            var tmp = new List<StreamStudent> {streamStudent1, streamStudent2, streamStudent3};
+            GroupWrapper groupWrapper = new GroupWrapper.GroupWrapperBuilder().WithStudents(tmp).Build();
             List<StreamStudent> result = _isuExtra.GetStudentsWithoutOgnpFromGroup(groupWrapper);
-            Assert.True(result.Count == 3);
-            // var streamStudentsList = new List<StreamStudent> {streamStudent1, streamStudent2, streamStudent3};
-            // StreamGroup streamGroup = new StreamGroup.StreamGroupBuilder()
-            //     .WithStreamStudents(streamStudentsList)
-            //     .Build();
-
+            Assert.True(result.Count == 2);
         }
     }
 }

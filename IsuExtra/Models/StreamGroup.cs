@@ -4,19 +4,21 @@ namespace IsuExtra.Models
 {
     public class StreamGroup
     {
+        private readonly List<Lesson> _lessons;
+        private readonly List<StreamStudent> _streamStudents;
         private StreamGroup(string name, List<StreamStudent> streamStudents, List<Lesson> lessons, Ognp ognp, int maxStudentCount)
         {
             Name = name;
-            StreamStudents = new List<StreamStudent>(streamStudents);
-            Lessons = new List<Lesson>(lessons);
+            _streamStudents = new List<StreamStudent>(streamStudents);
+            _lessons = new List<Lesson>(lessons);
             Ognp = ognp;
             MaxStudentCount = maxStudentCount;
         }
 
         public string Name { get; }
         public int MaxStudentCount { get; }
-        public IReadOnlyList<Lesson> Lessons { get; }
-        public IReadOnlyList<StreamStudent> StreamStudents { get; }
+        public IReadOnlyList<Lesson> Lessons => _lessons;
+        public IReadOnlyList<StreamStudent> StreamStudents => _streamStudents;
         public Ognp Ognp { get; }
 
         public StreamGroupBuilder ToBuild()

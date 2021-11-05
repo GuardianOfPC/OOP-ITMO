@@ -23,6 +23,8 @@ namespace IsuExtra.Services
         {
             if (streamStudent.OgnpCount > 2) throw new Exception("Ognp overflow");
             if (streamStudent.MegaFaculty == streamGroup.Ognp.MegaFaculty) throw new Exception("Same faculty");
+            if (!Lesson.IntersectionsCheck(streamGroup, streamStudent.GroupWrapper))
+                throw new Exception("Lesson intersection");
             int ognpCount = streamStudent.OgnpCount;
             ognpCount++;
             streamStudent.ToBuild().WithOgnpCount(ognpCount).Build();
