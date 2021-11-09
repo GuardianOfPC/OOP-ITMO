@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Shops.Models;
 using Shops.Tools;
 
@@ -7,89 +6,85 @@ namespace Shops.Controllers
 {
     public class ShopService : IShopService
     {
-        private readonly List<Shop> _shops = new ();
-        public IReadOnlyList<Shop> Shops => _shops;
+        public ShopsRepository ShopsRepository { get; } = new ();
 
-        public Shop AddShop(string name, string address)
+        public Shop AddShop(Shop shop)
         {
-            Shop shop = new Shop.ShopBuilder()
-                .WithName(name)
-                .WithAddress(address)
-                .Build();
-            _shops.Add(shop);
+            ShopsRepository.Add(shop);
             return shop;
         }
 
-        public Product RegisterProductAtShop(string name, Shop shop)
+        public Product RegisterProductAtShop(Product product, Shop shop)
         {
-            Product product = new Product.ProductBuilder()
-                .WithName(name)
-                .Build();
             var productsList = (List<Product>)shop.Products;
             productsList.Add(product);
-            _shops.Remove(shop);
+            ShopsRepository.Remove(shop);
             Shop outShop = shop
                 .ToBuilder()
                 .WithProducts(productsList)
                 .Build();
-            _shops.Add(outShop);
+            ShopsRepository.Add(outShop);
             return product;
         }
 
-        public Shop DeliveryToShop(Shop shop, string name, int quantity)
+        public Shop DeliveryToShop(Shop shop, Product product, int quantity)
         {
             var productsList = (List<Product>)shop.Products;
             foreach (Product productCur in productsList)
             {
-                if (productCur.Name == name)
-                {
-                    productsList.Remove(productCur);
-                    Product newProduct = productCur
-                        .ToBuilder()
-                        .WithQuantity(quantity)
-                        .Build();
-                    productsList.Add(newProduct);
-                    shop.ToBuilder()
-                        .WithProducts(productsList)
-                        .Build();
-                    return shop;
-                }
+                if (productCur.Name != product.Name) continue;
+                productsList.Remove(productCur);
+                Product newProduct = productCur
+                    .ToBuilder()
+                    .WithQuantity(quantity)
+                    .Build();
+                productsList.Add(newProduct);
+                ShopsRepository.UpdateShopProducts(shop, productsList);
+                return shop;
             }
 
             throw new ShopException(
                 "There is no such product in this shop");
         }
 
-        public Shop SetProductPrice(Shop shop, string name, int price)
+        public Shop SetProductPrice(Shop shop, Product product, int price)
         {
             var productsList = (List<Product>)shop.Products;
             foreach (Product productCur in productsList)
             {
-                if (productCur.Name == name)
-                {
-                    productsList.Remove(productCur);
-                    Product newProduct = productCur
-                        .ToBuilder()
-                        .WithPrice(price)
-                        .Build();
-                    productsList.Add(newProduct);
-                    shop.ToBuilder().WithProducts(productsList).Build();
-                    return shop;
-                }
+                if (productCur.Name != product.Name) continue;
+                productsList.Remove(productCur);
+                Product newProduct = productCur
+                    .ToBuilder()
+                    .WithPrice(price)
+                    .Build();
+                productsList.Add(newProduct);
+                ShopsRepository.UpdateShopProducts(shop, productsList);
+                return shop;
             }
 
             throw new ShopException(
                 "There is no such product in this shop");
         }
 
-        public Shop BestPossibleBuy(string name, int quantity)
+        public Shop BestPossibleBuy(Product product)
         {
-            int lowestPrice = _shops.First().Products.First().Price;
-            foreach (Shop currentShop in _shops)
+            int lowestPrice = -1;
+            foreach (Shop currentShop in ShopsRepository.Shops)
             {
                 foreach (Product currentShopProduct in currentShop.Products)
                 {
-                    if (currentShopProduct.Name == name &&
+                    if (currentShopProduct.Name == product.Name) lowestPrice = currentShopProduct.Price;
+                }
+            }
+
+            if (lowestPrice == -1) throw new ShopException("No such product");
+
+            foreach (Shop currentShop in ShopsRepository.Shops)
+            {
+                foreach (Product currentShopProduct in currentShop.Products)
+                {
+                    if (currentShopProduct.Name == product.Name &&
                         currentShopProduct.Price < lowestPrice)
                     {
                         lowestPrice = currentShopProduct.Price;
@@ -97,21 +92,21 @@ namespace Shops.Controllers
                 }
             }
 
-            foreach (Shop currentShop in _shops)
+            foreach (Shop currentShop in ShopsRepository.Shops)
             {
                 foreach (Product currentShopProduct in currentShop.Products)
                 {
-                    if (currentShopProduct.Quantity < quantity &&
+                    if (currentShopProduct.Quantity < product.Quantity &&
                         currentShopProduct.Price == lowestPrice &&
-                        currentShopProduct.Name == name)
+                        currentShopProduct.Name == product.Name)
                     {
-                        throw new ShopException(
-                            "Insufficient product");
+                        throw new
+                            ShopException("Insufficient product");
                     }
 
-                    if (currentShopProduct.Quantity >= quantity &&
+                    if (currentShopProduct.Quantity >= product.Quantity &&
                         currentShopProduct.Price == lowestPrice &&
-                        currentShopProduct.Name == name)
+                        currentShopProduct.Name == product.Name)
                     {
                         return currentShop;
                     }
@@ -121,12 +116,12 @@ namespace Shops.Controllers
             throw new ShopException("No such product");
         }
 
-        public Customer Buy(Customer customer, Shop shop, string name, int quantity)
+        public Customer Buy(Customer customer, Shop shop, Product product, int quantity)
         {
             var productList = (List<Product>)shop.Products;
             foreach (Product currProduct in productList)
             {
-                if (currProduct.Name == name)
+                if (currProduct.Name == product.Name)
                 {
                     if (currProduct.Quantity < quantity)
                     {
@@ -143,11 +138,7 @@ namespace Shops.Controllers
                         .ToBuilder()
                         .WithQuantity(currProduct.Quantity - quantity).Build();
                     productList.Add(newProd);
-                    _shops.Remove(shop);
-                    shop.ToBuilder()
-                        .WithProducts(productList)
-                        .Build();
-                    _shops.Add(shop);
+                    ShopsRepository.UpdateShopProducts(shop, productList);
                     int finalMoney = customer.Money - (currProduct.Price * quantity);
                     customer = customer.ToBuild()
                         .WithMoney(finalMoney)
@@ -159,11 +150,11 @@ namespace Shops.Controllers
             throw new ShopException("No such product");
         }
 
-        public Customer MultipleBuy(Customer customer, Shop shop, Dictionary<string, int> productsDictionary)
+        public Customer MultipleBuy(Customer customer, Shop shop, Dictionary<Product, int> productsDictionary)
         {
             int finalMoney = customer.Money;
 
-            foreach (KeyValuePair<string, int> keyValue in productsDictionary)
+            foreach (KeyValuePair<Product, int> keyValue in productsDictionary)
             {
                 customer = Buy(customer, shop, keyValue.Key, keyValue.Value);
                 finalMoney -= customer.Money;
