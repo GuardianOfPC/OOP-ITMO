@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Isu.Models;
-using Isu.Services;
+using IsuExtra.Interfaces;
 using IsuExtra.Models;
 using IsuExtra.Services;
 using NUnit.Framework;
@@ -10,20 +10,34 @@ namespace IsuExtra.Tests.Unit_Tests
 {
     public class IsuExtraTests
     {
-        private IsuService _isuService = new ();
-        private IsuExtraService _isuExtra = new ();
+        private IIsuExtraService _isuExtra;
+
+        [SetUp]
+        public void Setup()
+        {
+            IOgnpFactory ognpFactory = new OgnpFactory();
+            _isuExtra = ognpFactory.CreateIsuExtraService();
+        }
 
         [Test]
         public void AddOgnpToRegister_OgnpIsInTheRegister()
         {
-            Ognp ognp = _isuExtra.AddOgnpToRegister("Data Science", MegaFaculty.Tint );
-            Assert.True(_isuExtra.OgnpRegister.Contains(ognp));
+            Ognp ognp = new Ognp.OgnpBuilder()
+                .WithName("CyberSec")
+                .WithMegaFaculty(MegaFaculty.Ctu)
+                .Build();
+            _isuExtra.AddOgnpToRegister(ognp);
+            Assert.True(_isuExtra.OgnpRepository.CheckOgnp(ognp));
         }
 
         [Test]
         public void StudentEntryToOgnp_StudentIsInStreamGroup()
         {
-            Ognp ognp = _isuExtra.AddOgnpToRegister("CyberSec", MegaFaculty.Ctu );
+            Ognp ognp = new Ognp.OgnpBuilder()
+                .WithName("CyberSec")
+                .WithMegaFaculty(MegaFaculty.Ctu)
+                .Build();
+            _isuExtra.AddOgnpToRegister(ognp);
             Student student = new Student.StudentBuilder().WithName("Alex").Build();
             GroupWrapper groupWrapper = new GroupWrapper.GroupWrapperBuilder().Build();
             StreamStudent streamStudent = new StreamStudent.StreamStudentBuilder()
@@ -39,7 +53,11 @@ namespace IsuExtra.Tests.Unit_Tests
         [Test]
         public void StudentRemovalFromOgnp_StudentRemovedFromOgnp()
         {
-            Ognp ognp = _isuExtra.AddOgnpToRegister("CyberSec", MegaFaculty.Ctu );
+            Ognp ognp = new Ognp.OgnpBuilder()
+                .WithName("CyberSec")
+                .WithMegaFaculty(MegaFaculty.Ctu)
+                .Build();
+            _isuExtra.AddOgnpToRegister(ognp);
             Student student = new Student.StudentBuilder().WithName("Alex").Build();
             GroupWrapper groupWrapper = new GroupWrapper.GroupWrapperBuilder().Build();
             StreamStudent streamStudent = new StreamStudent.StreamStudentBuilder()
@@ -58,8 +76,16 @@ namespace IsuExtra.Tests.Unit_Tests
         [Test]
         public void GetStreamGroupsByOgnp_StreamGroupsFound()
         {
-            Ognp ognp1 = _isuExtra.AddOgnpToRegister("CyberSec", MegaFaculty.Ctu );
-            Ognp ognp2 = _isuExtra.AddOgnpToRegister("Data Science", MegaFaculty.Tint );
+            Ognp ognp1 = new Ognp.OgnpBuilder()
+                .WithName("CyberSec")
+                .WithMegaFaculty(MegaFaculty.Ctu)
+                .Build();
+            _isuExtra.AddOgnpToRegister(ognp1);
+            Ognp ognp2 = new Ognp.OgnpBuilder()
+                .WithName("Data Science")
+                .WithMegaFaculty(MegaFaculty.Tint)
+                .Build();
+            _isuExtra.AddOgnpToRegister(ognp2);
             StreamGroup streamGroup1 = new StreamGroup.StreamGroupBuilder().WithOgnp(ognp1).Build();
             StreamGroup streamGroup2 = new StreamGroup.StreamGroupBuilder().WithOgnp(ognp1).Build();
             StreamGroup streamGroup3 = new StreamGroup.StreamGroupBuilder().WithOgnp(ognp2).Build();
@@ -70,7 +96,11 @@ namespace IsuExtra.Tests.Unit_Tests
         [Test]
         public void GetStreamStudentsListFromStreamGroup_StreamStudentsListReturned()
         {
-            Ognp ognp = _isuExtra.AddOgnpToRegister("CyberSec", MegaFaculty.Ctu );
+            Ognp ognp = new Ognp.OgnpBuilder()
+                .WithName("CyberSec")
+                .WithMegaFaculty(MegaFaculty.Ctu)
+                .Build();
+            _isuExtra.AddOgnpToRegister(ognp);
             GroupWrapper groupWrapper = new GroupWrapper.GroupWrapperBuilder().Build();
             Student student1 = new Student.StudentBuilder().WithName("Alex").Build();
             StreamStudent streamStudent1 = new StreamStudent.StreamStudentBuilder()

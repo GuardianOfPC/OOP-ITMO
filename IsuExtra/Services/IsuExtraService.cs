@@ -1,21 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using IsuExtra.Interfaces;
 using IsuExtra.Models;
 
 namespace IsuExtra.Services
 {
-    public class IsuExtraService
+    public class IsuExtraService : IIsuExtraService
     {
-        private readonly List<Ognp> _ognpRegister = new ();
-        public IReadOnlyCollection<Ognp> OgnpRegister => _ognpRegister;
+        public IsuExtraService(IOgnpRepository ognpRepository) => OgnpRepository = ognpRepository;
+        public IOgnpRepository OgnpRepository { get; }
 
-        public Ognp AddOgnpToRegister(string name, MegaFaculty megaFaculty)
+        public Ognp AddOgnpToRegister(Ognp ognp)
         {
-            Ognp ognp = new Ognp.OgnpBuilder()
-                .WithName(name)
-                .WithMegaFaculty(megaFaculty)
-                .Build();
-            _ognpRegister.Add(ognp);
+            OgnpRepository.Add(ognp);
             return ognp;
         }
 
