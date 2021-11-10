@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using Shops.Models;
+using Shops.Interfaces;
 
-namespace Shops.Tools
+namespace Shops.Models
 {
-    public class ShopsRepository
+    public class ShopsRepository : IShopsRepository
     {
         public ShopsRepository() => Shops = new List<Shop>();
         public List<Shop> Shops { get; }

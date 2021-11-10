@@ -1,13 +1,21 @@
 ﻿using System.Collections.Generic;
 using NUnit.Framework;
-using Shops.Controllers;
+using Shops.Interfaces;
 using Shops.Models;
+using Shops.Services;
 
 namespace Shops.Tests
 {
     public class ShopTests
     {
-        private readonly IShopService _shopService = new ShopService();
+        private IShopService _shopService;
+
+        [SetUp]
+        public void Setup()
+        {
+            IShopFactory shopFactory = new ShopsFactory();
+            _shopService = shopFactory.CreateShopService();
+        }
 
         [Test]
         public void AddShopToList_ListHasShop()

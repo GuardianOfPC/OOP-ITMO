@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using Shops.Models;
-using Shops.Tools;
 
-namespace Shops.Controllers
+namespace Shops.Interfaces
 {
     public interface IShopService
     {
-        public ShopsRepository ShopsRepository { get; }
+        public IShopsRepository ShopsRepository { get; }
         public Shop AddShop(Shop shop);
         public Product RegisterProductAtShop(Product product, Shop shop);
         public Shop DeliveryToShop(Shop shop, Product product, int quantity);

@@ -1,12 +1,15 @@
 ﻿using System.Collections.Generic;
+using Shops.Interfaces;
 using Shops.Models;
 using Shops.Tools;
 
-namespace Shops.Controllers
+namespace Shops.Services
 {
     public class ShopService : IShopService
     {
-        public ShopsRepository ShopsRepository { get; } = new ();
+        public ShopService(IShopsRepository shopsRepository) => ShopsRepository = shopsRepository;
+
+        public IShopsRepository ShopsRepository { get; }
 
         public Shop AddShop(Shop shop)
         {
