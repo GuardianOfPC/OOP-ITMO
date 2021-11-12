@@ -7,7 +7,7 @@ namespace IsuExtra.Interfaces
     {
         public IOgnpRepository OgnpRepository { get; }
         public Ognp AddOgnpToRegister(Ognp ognp);
-        public StreamGroup StudentOgnpEntry(StreamStudent streamStudent, StreamGroup streamGroup);
+        public StreamGroup AddStudentToStreamGroup(StreamStudent streamStudent, StreamGroup streamGroup);
         public StreamGroup StudentOgnpRemoval(StreamStudent streamStudent, StreamGroup streamGroup);
         public List<StreamGroup> GetStreamGroupsFromConcreteOgnp(List<StreamGroup> streamGroups, Ognp ognp);
         public List<StreamStudent> GetStudentsFromStreamGroup(StreamGroup streamGroup);

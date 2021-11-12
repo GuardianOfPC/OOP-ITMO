@@ -46,7 +46,7 @@ namespace IsuExtra.Tests.Unit_Tests
                 .WithGroupWrapper(groupWrapper)
                 .Build();
             StreamGroup streamGroup = new StreamGroup.StreamGroupBuilder().WithOgnp(ognp).Build();
-            _isuExtra.StudentOgnpEntry(streamStudent, streamGroup);
+            _isuExtra.AddStudentToStreamGroup(streamStudent, streamGroup);
             Assert.True(streamGroup.StreamStudents.Contains(streamStudent));
         }
         
@@ -66,7 +66,7 @@ namespace IsuExtra.Tests.Unit_Tests
                 .WithGroupWrapper(groupWrapper)
                 .Build();
             StreamGroup streamGroup = new StreamGroup.StreamGroupBuilder().WithOgnp(ognp).Build();
-            _isuExtra.StudentOgnpEntry(streamStudent, streamGroup);
+            _isuExtra.AddStudentToStreamGroup(streamStudent, streamGroup);
             Assert.True(streamGroup.StreamStudents.Contains(streamStudent));
             _isuExtra.StudentOgnpRemoval(streamStudent, streamGroup);
             Assert.True(!streamGroup.StreamStudents.Contains(streamStudent));
@@ -123,9 +123,9 @@ namespace IsuExtra.Tests.Unit_Tests
             StreamGroup streamGroup = new StreamGroup.StreamGroupBuilder()
                 .WithOgnp(ognp)
                 .Build();
-            _isuExtra.StudentOgnpEntry(streamStudent1, streamGroup);
-            _isuExtra.StudentOgnpEntry(streamStudent2, streamGroup);
-            _isuExtra.StudentOgnpEntry(streamStudent3, streamGroup);
+            _isuExtra.AddStudentToStreamGroup(streamStudent1, streamGroup);
+            _isuExtra.AddStudentToStreamGroup(streamStudent2, streamGroup);
+            _isuExtra.AddStudentToStreamGroup(streamStudent3, streamGroup);
             List<StreamStudent> result = _isuExtra.GetStudentsFromStreamGroup(streamGroup);
             Assert.True(result.Count == 3);
         }

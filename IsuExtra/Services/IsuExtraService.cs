@@ -16,7 +16,7 @@ namespace IsuExtra.Services
             return ognp;
         }
 
-        public StreamGroup StudentOgnpEntry(StreamStudent streamStudent, StreamGroup streamGroup)
+        public StreamGroup AddStudentToStreamGroup(StreamStudent streamStudent, StreamGroup streamGroup)
         {
             if (streamStudent.OgnpCount > 2) throw new Exception("Ognp overflow");
             if (streamStudent.MegaFaculty == streamGroup.Ognp.MegaFaculty) throw new Exception("Same faculty");
