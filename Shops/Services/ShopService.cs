@@ -30,7 +30,7 @@ namespace Shops.Services
             return product;
         }
 
-        public Shop DeliveryToShop(Shop shop, Product product, int quantity)
+        public Shop DeliveryToShop(Shop shop, Product product, uint quantity)
         {
             var productsList = (List<Product>)shop.Products;
             foreach (Product productCur in productsList)
@@ -50,7 +50,7 @@ namespace Shops.Services
                 "There is no such product in this shop");
         }
 
-        public Shop SetProductPrice(Shop shop, Product product, int price)
+        public Shop SetProductPrice(Shop shop, Product product, uint price)
         {
             var productsList = (List<Product>)shop.Products;
             foreach (Product productCur in productsList)
@@ -72,7 +72,7 @@ namespace Shops.Services
 
         public Shop BestPossibleBuy(Product product)
         {
-            int lowestPrice = -1;
+            uint? lowestPrice = null;
             foreach (Shop currentShop in ShopsRepository.Shops)
             {
                 foreach (Product currentShopProduct in currentShop.Products)
@@ -81,7 +81,7 @@ namespace Shops.Services
                 }
             }
 
-            if (lowestPrice == -1) throw new ShopException("No such product");
+            if (lowestPrice == null) throw new ShopException("No such product");
 
             foreach (Shop currentShop in ShopsRepository.Shops)
             {
@@ -119,7 +119,7 @@ namespace Shops.Services
             throw new ShopException("No such product");
         }
 
-        public Customer Buy(Customer customer, Shop shop, Product product, int quantity)
+        public Customer Buy(Customer customer, Shop shop, Product product, uint quantity)
         {
             var productList = (List<Product>)shop.Products;
             foreach (Product currProduct in productList)
@@ -142,7 +142,7 @@ namespace Shops.Services
                         .WithQuantity(currProduct.Quantity - quantity).Build();
                     productList.Add(newProd);
                     ShopsRepository.UpdateShopProducts(shop, productList);
-                    int finalMoney = customer.Money - (currProduct.Price * quantity);
+                    uint finalMoney = customer.Money - (currProduct.Price * quantity);
                     customer = customer.ToBuild()
                         .WithMoney(finalMoney)
                         .Build();
@@ -153,13 +153,13 @@ namespace Shops.Services
             throw new ShopException("No such product");
         }
 
-        public Customer MultipleBuy(Customer customer, Shop shop, Dictionary<Product, int> productsDictionary)
+        public Customer MultipleBuy(Customer customer, Shop shop, Dictionary<Product, uint> productsDictionary)
         {
-            int finalMoney = customer.Money;
+            uint finalMoney = customer.Money;
 
-            foreach (KeyValuePair<Product, int> keyValue in productsDictionary)
+            foreach ((Product product, uint quantity) in productsDictionary)
             {
-                customer = Buy(customer, shop, keyValue.Key, keyValue.Value);
+                customer = Buy(customer, shop, product, quantity);
                 finalMoney -= customer.Money;
             }
 

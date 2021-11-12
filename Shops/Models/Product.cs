@@ -4,7 +4,7 @@ namespace Shops.Models
 {
     public class Product
     {
-        private Product(string name, int price, int quantity)
+        private Product(string name, uint price, uint quantity)
         {
             Name = name;
             Price = price;
@@ -14,8 +14,8 @@ namespace Shops.Models
 
         public string Name { get; }
         public Guid Id { get; }
-        public int Price { get; }
-        public int Quantity { get; }
+        public uint Price { get; }
+        public uint Quantity { get; }
 
         public ProductBuilder ToBuilder()
         {
@@ -29,8 +29,8 @@ namespace Shops.Models
         public class ProductBuilder
         {
             private string _name;
-            private int _price;
-            private int _quantity;
+            private uint _price;
+            private uint _quantity;
 
             public ProductBuilder WithName(string name)
             {
@@ -38,13 +38,13 @@ namespace Shops.Models
                 return this;
             }
 
-            public ProductBuilder WithPrice(int price)
+            public ProductBuilder WithPrice(uint price)
             {
                 _price = price;
                 return this;
             }
 
-            public ProductBuilder WithQuantity(int quantity)
+            public ProductBuilder WithQuantity(uint quantity)
             {
                 _quantity = quantity;
                 return this;

@@ -2,14 +2,14 @@
 {
     public class Customer
     {
-        private Customer(string name, int money)
+        private Customer(string name, uint money)
         {
             Name = name;
             Money = money;
         }
 
         public string Name { get; }
-        public int Money { get; }
+        public uint Money { get; }
 
         public CustomerBuilder ToBuild()
         {
@@ -23,7 +23,7 @@
         public class CustomerBuilder
         {
             private string _name;
-            private int _money;
+            private uint _money;
 
             public CustomerBuilder WithName(string name)
             {
@@ -31,7 +31,7 @@
                 return this;
             }
 
-            public CustomerBuilder WithMoney(int money)
+            public CustomerBuilder WithMoney(uint money)
             {
                 _money = money;
                 return this;

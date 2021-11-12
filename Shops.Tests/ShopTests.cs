@@ -182,7 +182,7 @@ namespace Shops.Tests
              _shopService.DeliveryToShop(shop, product2, 5);
              _shopService.SetProductPrice(shop, product2, 120);
 
-             Dictionary<Product, int> productsDictionary = new ()
+             Dictionary<Product, uint> productsDictionary = new ()
              {
                  {product1, 5},
                  {product2, 2}
@@ -199,5 +199,35 @@ namespace Shops.Tests
              }
              Assert.True(customer.Money == 260);
          }
+
+         // [Test]
+         // public void AddProdAAddProdB()
+         // {
+         //     Shop shop = new Shop.ShopBuilder()
+         //         .WithName("Ozon")
+         //         .WithAddress("Moscow City")
+         //         .Build();
+         //     Product product1 = new Product.ProductBuilder()
+         //         .WithName("Молоко")
+         //         .Build();
+         //     Product product2 = new Product.ProductBuilder()
+         //         .WithName("Сыр")
+         //         .Build();
+         //     Customer customer = new Customer.CustomerBuilder()
+         //         .WithName("Alexey")
+         //         .WithMoney(1000)
+         //         .Build();
+         //     _shopService.AddShop(shop);
+         //     _shopService.RegisterProductAtShop(product1, shop);
+         //     _shopService.DeliveryToShop(shop, product1, 10);
+         //     _shopService.SetProductPrice(shop, product1, 100);
+         //     Dictionary<Product, uint> productsDictionary = new ()
+         //     {
+         //         {product1, 5},
+         //         {product2, 2}
+         //     };
+         //     _shopService.MultipleBuy(customer, shop, productsDictionary);
+         //     Assert.True(customer.Money == 500);
+         // }
      }
  }
