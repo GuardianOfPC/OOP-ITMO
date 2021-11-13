@@ -72,13 +72,15 @@ namespace Shops.Services
         public Shop BestPossibleBuy(Dictionary<Product, uint> productsDictionary)
         {
             Shop resultShop = null;
-            uint lowestPrice = ShopsRepository.Shops.First().Products.First().Price;
+            uint lowestPrice = ShopsRepository.Shops.First().Products[0].Price;
+            bool isProductInShop = false;
             foreach ((Product product, uint quantity) in productsDictionary)
             {
                 foreach (Shop currentShop in ShopsRepository.Shops)
                 {
                     foreach (Product currentShopProduct in currentShop.Products)
                     {
+                        if (currentShopProduct.Name == product.Name) isProductInShop = true;
                         if (currentShopProduct.Name == product.Name
                             && currentShopProduct.Price < lowestPrice)
                         {
@@ -86,6 +88,8 @@ namespace Shops.Services
                         }
                     }
                 }
+
+                if (isProductInShop == false) throw new ShopException("No such product");
 
                 foreach (Shop currentShop in ShopsRepository.Shops)
                 {
@@ -101,7 +105,7 @@ namespace Shops.Services
                 }
             }
 
-            if (resultShop == null) throw new ShopException("No such product");
+            if (resultShop == null) throw new ShopException("No such Shop");
 
             return resultShop;
         }
