@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using Shops.Interfaces;
 using Shops.Models;
@@ -69,7 +70,7 @@ namespace Shops.Tests
         }
 
           [Test]
-          public void BestBuySomeProduct_BestShopFound()
+          public void BestBuySomeProducts_BestShopsFound()
           {
               Shop shop1 = new Shop.ShopBuilder()
                   .WithName("Ozon")
@@ -83,6 +84,10 @@ namespace Shops.Tests
                   .WithName("Dixy")
                   .WithAddress("Omsk")
                   .Build();
+              Shop shop4 = new Shop.ShopBuilder()
+                  .WithName("Magnit")
+                  .WithAddress("Perm")
+                  .Build();
               Product product1 = new Product.ProductBuilder()
                   .WithName("Молоко")
                   .Build();
@@ -90,15 +95,21 @@ namespace Shops.Tests
                   .WithName("Молоко")
                   .Build();
               Product product3 = new Product.ProductBuilder()
-                  .WithName("Молоко")
+                  .WithName("Сыр")
                   .Build();
+              Product product4 = new Product.ProductBuilder()
+                  .WithName("Сыр")
+                  .Build();
+              
               
               _shopService.AddShop(shop1);
               _shopService.AddShop(shop2);
               _shopService.AddShop(shop3);
+              _shopService.AddShop(shop4);
               _shopService.RegisterProductAtShop(product1, shop1);
               _shopService.RegisterProductAtShop(product2, shop2);
               _shopService.RegisterProductAtShop(product3, shop3);
+              _shopService.RegisterProductAtShop(product4, shop4);
               
               
               _shopService.DeliveryToShop(shop1, product1, 10);
@@ -106,16 +117,28 @@ namespace Shops.Tests
               
               _shopService.DeliveryToShop(shop2, product2, 10);
               _shopService.SetProductPrice(shop2, product2, 90);
-              
-              _shopService.DeliveryToShop(shop3, product3, 10);
-              _shopService.SetProductPrice(shop3, product3,40);
 
-              Product neededProduct = new Product.ProductBuilder()
+              _shopService.DeliveryToShop(shop3, product3, 5);
+              _shopService.SetProductPrice(shop3, product3,40);
+              
+              _shopService.DeliveryToShop(shop4, product4, 5);
+              _shopService.SetProductPrice(shop4, product4, 120);
+
+              Product neededProduct1 = new Product.ProductBuilder()
                   .WithName("Молоко")
                   .Build();
+              Product neededProduct2 = new Product.ProductBuilder()
+                  .WithName("Сыр")
+                  .Build();
+              Dictionary<Product, uint> productsDictionary = new ()
+              {
+                  {neededProduct1, 10},
+                  {neededProduct2, 5}
+              };
 
-              Shop goodShop = _shopService.BestPossibleBuy(neededProduct);
-              Assert.True(goodShop.Name == "Dixy");
+              List<Shop> goodShopsList = _shopService.BestPossibleMultipleBuy(productsDictionary);
+              Assert.True(goodShopsList.ElementAt(0).Name == "5");
+              Assert.True(goodShopsList.ElementAt(1).Name == "Dixy");
           }
 
           [Test]
