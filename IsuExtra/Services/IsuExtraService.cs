@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using IsuExtra.Interfaces;
 using IsuExtra.Models;
 
@@ -24,10 +25,10 @@ namespace IsuExtra.Services
                 throw new Exception("Lesson intersection");
             int ognpCount = streamStudent.OgnpCount;
             ognpCount++;
-            streamStudent.ToBuild().WithOgnpCount(ognpCount).Build();
+            streamStudent = streamStudent.ToBuild().WithOgnpCount(ognpCount).Build();
             var studentList = (List<StreamStudent>)streamGroup.StreamStudents;
             studentList.Add(streamStudent);
-            streamGroup.ToBuild().WithStreamStudents(studentList).Build();
+            streamGroup = streamGroup.ToBuild().WithStreamStudents(studentList).Build();
             return streamGroup;
         }
 
@@ -35,22 +36,23 @@ namespace IsuExtra.Services
         {
             int ognpCount = streamStudent.OgnpCount;
             ognpCount--;
-            streamStudent.ToBuild().WithOgnpCount(ognpCount).Build();
+            streamStudent = streamStudent.ToBuild().WithOgnpCount(ognpCount).Build();
             var studentList = (List<StreamStudent>)streamGroup.StreamStudents;
-            studentList.Remove(streamStudent);
-            streamGroup.ToBuild().WithStreamStudents(studentList).Build();
+            StreamStudent studentToDelete = null;
+            foreach (StreamStudent student in studentList)
+            {
+                if (student.Student.Name == streamStudent.Student.Name)
+                    studentToDelete = student;
+            }
+
+            studentList.Remove(studentToDelete);
+            streamGroup = streamGroup.ToBuild().WithStreamStudents(studentList).Build();
             return streamGroup;
         }
 
         public List<StreamGroup> GetStreamGroupsFromConcreteOgnp(List<StreamGroup> streamGroups, Ognp ognp)
         {
-            var finalList = new List<StreamGroup>();
-            foreach (StreamGroup streamGroup in streamGroups)
-            {
-                if (streamGroup.Ognp.Equals(ognp)) finalList.Add(streamGroup);
-            }
-
-            return finalList;
+            return streamGroups.Where(streamGroup => streamGroup.Ognp.Equals(ognp)).ToList();
         }
 
         public List<StreamStudent> GetStudentsFromStreamGroup(StreamGroup streamGroup)
@@ -61,13 +63,7 @@ namespace IsuExtra.Services
 
         public List<StreamStudent> GetStudentsWithoutOgnpFromGroup(GroupWrapper groupWrapper)
         {
-            var result = new List<StreamStudent>();
-            foreach (StreamStudent streamStudent in groupWrapper.StreamStudents)
-            {
-                if (streamStudent.OgnpCount == 0) result.Add(streamStudent);
-            }
-
-            return result;
+            return groupWrapper.StreamStudents.Where(streamStudent => streamStudent.OgnpCount == 0).ToList();
         }
     }
 }

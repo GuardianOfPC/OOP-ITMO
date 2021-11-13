@@ -46,8 +46,18 @@ namespace IsuExtra.Tests.Unit_Tests
                 .WithGroupWrapper(groupWrapper)
                 .Build();
             StreamGroup streamGroup = new StreamGroup.StreamGroupBuilder().WithOgnp(ognp).Build();
-            _isuExtra.AddStudentToStreamGroup(streamStudent, streamGroup);
-            Assert.True(streamGroup.StreamStudents.Contains(streamStudent));
+            streamGroup = _isuExtra.AddStudentToStreamGroup(streamStudent, streamGroup);
+            bool flag = false;
+            foreach (StreamStudent curStreamStudent in streamGroup.StreamStudents)
+            {
+                if (curStreamStudent.Student.Name == streamStudent.Student.Name)
+                {
+                    flag = true;
+                    break;
+                }
+            }
+            
+            Assert.True(flag);
         }
         
         [Test]
@@ -66,11 +76,29 @@ namespace IsuExtra.Tests.Unit_Tests
                 .WithGroupWrapper(groupWrapper)
                 .Build();
             StreamGroup streamGroup = new StreamGroup.StreamGroupBuilder().WithOgnp(ognp).Build();
-            _isuExtra.AddStudentToStreamGroup(streamStudent, streamGroup);
-            Assert.True(streamGroup.StreamStudents.Contains(streamStudent));
-            _isuExtra.StudentOgnpRemoval(streamStudent, streamGroup);
-            Assert.True(!streamGroup.StreamStudents.Contains(streamStudent));
+            streamGroup = _isuExtra.AddStudentToStreamGroup(streamStudent, streamGroup);
+            bool flag1 = false;
+            foreach (StreamStudent curStreamStudent in streamGroup.StreamStudents)
+            {
+                if (curStreamStudent.Student.Name == streamStudent.Student.Name)
+                {
+                    flag1 = true;
+                    break;
+                }
+            }
+            Assert.True(flag1);
+            streamGroup = _isuExtra.StudentOgnpRemoval(streamStudent, streamGroup);
+            bool flag2 = false;
+            foreach (StreamStudent curStreamStudent in streamGroup.StreamStudents)
+            {
+                if (curStreamStudent.Student.Name == streamStudent.Student.Name)
+                {
+                    flag2 = true;
+                    break;
+                }
+            }
             
+            Assert.False(flag2);
         }
         
         [Test]

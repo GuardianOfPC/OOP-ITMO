@@ -1,4 +1,5 @@
-﻿using Isu.Models;
+﻿using System;
+using Isu.Models;
 
 namespace IsuExtra.Models
 {
