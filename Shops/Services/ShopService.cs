@@ -155,15 +155,11 @@ namespace Shops.Services
 
         public Customer MultipleBuy(Customer customer, Shop shop, Dictionary<Product, uint> productsDictionary)
         {
-            uint finalMoney = customer.Money;
-
             foreach ((Product product, uint quantity) in productsDictionary)
             {
                 customer = Buy(customer, shop, product, quantity);
-                finalMoney -= customer.Money;
             }
 
-            customer.ToBuild().WithMoney(finalMoney).Build();
             return customer;
         }
     }
