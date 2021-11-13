@@ -69,59 +69,41 @@ namespace Shops.Services
                 "There is no such product in this shop");
         }
 
-        public Shop BestPossibleSingleBuy(Product product, uint quantity)
+        public Shop BestPossibleBuy(Dictionary<Product, uint> productsDictionary)
         {
-            uint? lowestPrice = null;
-            foreach (Product currentShopProduct in from currentShop in ShopsRepository.Shops from currentShopProduct in currentShop.Products where currentShopProduct.Name == product.Name select currentShopProduct)
+            Shop resultShop = null;
+            uint lowestPrice = ShopsRepository.Shops.First().Products.First().Price;
+            foreach ((Product product, uint quantity) in productsDictionary)
             {
-                lowestPrice = currentShopProduct.Price;
-            }
-
-            if (lowestPrice == null) throw new ShopException("No such product");
-
-            foreach (Product currentShopProduct in from currentShop in ShopsRepository.Shops
-                from currentShopProduct in currentShop.Products
-                where currentShopProduct.Name == product.Name &&
-                      currentShopProduct.Price < lowestPrice
-                select currentShopProduct)
-            {
-                lowestPrice = currentShopProduct.Price;
-            }
-
-            foreach (Shop currentShop in ShopsRepository.Shops)
-            {
-                foreach (Product currentShopProduct in currentShop.Products)
+                foreach (Shop currentShop in ShopsRepository.Shops)
                 {
-                    if (currentShopProduct.Quantity < quantity &&
-                        currentShopProduct.Price == lowestPrice &&
-                        currentShopProduct.Name == product.Name)
+                    foreach (Product currentShopProduct in currentShop.Products)
                     {
-                        throw new
-                            ShopException("Insufficient product");
+                        if (currentShopProduct.Name == product.Name
+                            && currentShopProduct.Price < lowestPrice)
+                        {
+                            lowestPrice = currentShopProduct.Price;
+                        }
                     }
+                }
 
-                    if (currentShopProduct.Quantity >= quantity &&
-                        currentShopProduct.Price == lowestPrice &&
-                        currentShopProduct.Name == product.Name)
+                foreach (Shop currentShop in ShopsRepository.Shops)
+                {
+                    foreach (Product currentShopProduct in currentShop.Products)
                     {
-                        return currentShop;
+                        if (currentShopProduct.Name == product.Name
+                            && currentShopProduct.Price == lowestPrice)
+                        {
+                            if (currentShopProduct.Quantity < quantity) throw new ShopException("Insufficient Product");
+                            resultShop = currentShop;
+                        }
                     }
                 }
             }
 
-            throw new ShopException("No such product");
-        }
+            if (resultShop == null) throw new ShopException("No such product");
 
-        public List<Shop> BestPossibleMultipleBuy(Dictionary<Product, uint> productsDictionary)
-        {
-            var result = new List<Shop>();
-            foreach ((Product product, uint quantity) in productsDictionary)
-            {
-                Shop tmp = BestPossibleSingleBuy(product, quantity);
-                result.Add(tmp);
-            }
-
-            return result;
+            return resultShop;
         }
 
         public Customer Buy(Customer customer, Shop shop, Product product, uint quantity)
