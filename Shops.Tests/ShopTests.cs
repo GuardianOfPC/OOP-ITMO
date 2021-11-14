@@ -42,10 +42,9 @@ namespace Shops.Tests
             _shopService.RegisterProductAtShop(beer, ozon);
             _shopService.DeliveryToShop(ozon, beer, 10);
             var productsList = (List<Product>)ozon.Products;
-            foreach (Product current in productsList)
+            foreach (Product current in productsList.Where(current => current.Name == beer.Name))
             {
-                if (current.Name == beer.Name) 
-                    Assert.True(current.Quantity == 10);
+                Assert.True(current.Quantity == 10);
             }
         }
         

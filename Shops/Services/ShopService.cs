@@ -76,16 +76,13 @@ namespace Shops.Services
             bool isProductInShop = false;
             foreach ((Product product, uint quantity) in productsDictionary)
             {
-                foreach (Shop currentShop in ShopsRepository.Shops)
+                foreach (var currentShopProduct in ShopsRepository.Shops.SelectMany(currentShop => currentShop.Products))
                 {
-                    foreach (Product currentShopProduct in currentShop.Products)
+                    if (currentShopProduct.Name == product.Name) isProductInShop = true;
+                    if (currentShopProduct.Name == product.Name
+                        && currentShopProduct.Price < lowestPrice)
                     {
-                        if (currentShopProduct.Name == product.Name) isProductInShop = true;
-                        if (currentShopProduct.Name == product.Name
-                            && currentShopProduct.Price < lowestPrice)
-                        {
-                            lowestPrice = currentShopProduct.Price;
-                        }
+                        lowestPrice = currentShopProduct.Price;
                     }
                 }
 
@@ -115,16 +112,8 @@ namespace Shops.Services
             var productList = (List<Product>)shop.Products;
             foreach (Product currProduct in productList.Where(currProduct => currProduct.Name == product.Name))
             {
-                if (currProduct.Quantity < quantity)
-                {
-                    throw new ShopException("Insufficient products");
-                }
-
-                if (customer.Money < (currProduct.Price * quantity))
-                {
-                    throw new ShopException("Not enough money");
-                }
-
+                if (currProduct.Quantity < quantity) throw new ShopException("Insufficient products");
+                if (customer.Money < (currProduct.Price * quantity)) throw new ShopException("Not enough money");
                 productList.Remove(currProduct);
                 Product newProd = currProduct
                     .ToBuilder()
