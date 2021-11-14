@@ -47,16 +47,8 @@ namespace IsuExtra.Tests.Unit_Tests
                 .Build();
             StreamGroup streamGroup = new StreamGroup.StreamGroupBuilder().WithOgnp(ognp).Build();
             streamGroup = _isuExtra.AddStudentToStreamGroup(streamStudent, streamGroup);
-            bool flag = false;
-            foreach (StreamStudent curStreamStudent in streamGroup.StreamStudents)
-            {
-                if (curStreamStudent.Student.Name == streamStudent.Student.Name)
-                {
-                    flag = true;
-                    break;
-                }
-            }
-            
+            bool flag = streamGroup.StreamStudents.Any(curStreamStudent => curStreamStudent.Student.Name == streamStudent.Student.Name);
+
             Assert.True(flag);
         }
         
@@ -77,27 +69,10 @@ namespace IsuExtra.Tests.Unit_Tests
                 .Build();
             StreamGroup streamGroup = new StreamGroup.StreamGroupBuilder().WithOgnp(ognp).Build();
             streamGroup = _isuExtra.AddStudentToStreamGroup(streamStudent, streamGroup);
-            bool flag1 = false;
-            foreach (StreamStudent curStreamStudent in streamGroup.StreamStudents)
-            {
-                if (curStreamStudent.Student.Name == streamStudent.Student.Name)
-                {
-                    flag1 = true;
-                    break;
-                }
-            }
+            bool flag1 = streamGroup.StreamStudents.Any(curStreamStudent => curStreamStudent.Student.Name == streamStudent.Student.Name);
             Assert.True(flag1);
             streamGroup = _isuExtra.StudentOgnpRemoval(streamStudent, streamGroup);
-            bool flag2 = false;
-            foreach (StreamStudent curStreamStudent in streamGroup.StreamStudents)
-            {
-                if (curStreamStudent.Student.Name == streamStudent.Student.Name)
-                {
-                    flag2 = true;
-                    break;
-                }
-            }
-            
+            bool flag2 = streamGroup.StreamStudents.Any(curStreamStudent => curStreamStudent.Student.Name == streamStudent.Student.Name);
             Assert.False(flag2);
         }
         

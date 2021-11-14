@@ -39,10 +39,9 @@ namespace IsuExtra.Services
             streamStudent = streamStudent.ToBuild().WithOgnpCount(ognpCount).Build();
             var studentList = (List<StreamStudent>)streamGroup.StreamStudents;
             StreamStudent studentToDelete = null;
-            foreach (StreamStudent student in studentList)
+            foreach (StreamStudent student in studentList.Where(student => student.Student.Name == streamStudent.Student.Name))
             {
-                if (student.Student.Name == streamStudent.Student.Name)
-                    studentToDelete = student;
+                studentToDelete = student;
             }
 
             studentList.Remove(studentToDelete);
