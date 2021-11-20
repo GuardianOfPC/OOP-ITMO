@@ -94,10 +94,10 @@ namespace Shops.Tests
               _shopService.RegisterProductAtShop(product2, shop2);
               
               _shopService.DeliveryToShop(shop1, product1, 10);
-              _shopService.SetProductPrice(shop1, product1, 60);
+              _shopService.SetProductPrice(shop1, product1, 150);
               
               _shopService.DeliveryToShop(shop1, product2, 5);
-              _shopService.SetProductPrice(shop1, product2, 90);
+              _shopService.SetProductPrice(shop1, product2, 190);
 
               _shopService.DeliveryToShop(shop2, product1, 10);
               _shopService.SetProductPrice(shop2, product1,100);
@@ -112,7 +112,7 @@ namespace Shops.Tests
               };
 
               Shop goodShop = _shopService.BestPossibleBuy(productsDictionary);
-              Assert.True(goodShop.Name == "Ozon");
+              Assert.True(goodShop.Name == "5");
           }
 
           [Test]
