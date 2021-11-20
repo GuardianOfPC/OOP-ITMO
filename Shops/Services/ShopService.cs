@@ -34,71 +34,63 @@ namespace Shops.Services
         public Shop DeliveryToShop(Shop shop, Product product, uint quantity)
         {
             var productsList = (List<Product>)shop.Products;
-            foreach (Product productCur in productsList.Where(productCur => productCur.Name == product.Name))
-            {
-                productsList.Remove(productCur);
-                Product newProduct = productCur
-                    .ToBuilder()
-                    .WithQuantity(quantity)
-                    .Build();
-                productsList.Add(newProduct);
-                ShopsRepository.UpdateShopProducts(shop, productsList);
-                return shop;
-            }
-
-            throw new ShopException(
-                "There is no such product in this shop");
+            Product productCur = productsList.FirstOrDefault(productNeeded => productNeeded.Name == product.Name);
+            if (productCur == null) throw new ShopException("No such product");
+            productsList.Remove(productCur);
+            Product newProduct = productCur
+                .ToBuilder()
+                .WithQuantity(quantity)
+                .Build();
+            productsList.Add(newProduct);
+            ShopsRepository.UpdateShopProducts(shop, productsList);
+            return shop;
         }
 
         public Shop SetProductPrice(Shop shop, Product product, uint price)
         {
             var productsList = (List<Product>)shop.Products;
-            foreach (Product productCur in productsList.Where(productCur => productCur.Name == product.Name))
-            {
-                productsList.Remove(productCur);
-                Product newProduct = productCur
-                    .ToBuilder()
-                    .WithPrice(price)
-                    .Build();
-                productsList.Add(newProduct);
-                ShopsRepository.UpdateShopProducts(shop, productsList);
-                return shop;
-            }
-
-            throw new ShopException(
-                "There is no such product in this shop");
+            Product productCur = productsList.FirstOrDefault(productNeeded => productNeeded.Name == product.Name);
+            if (productCur == null) throw new ShopException("No such product");
+            productsList.Remove(productCur);
+            Product newProduct = productCur
+                .ToBuilder()
+                .WithPrice(price)
+                .Build();
+            productsList.Add(newProduct);
+            ShopsRepository.UpdateShopProducts(shop, productsList);
+            return shop;
         }
 
         public Shop BestPossibleBuy(Dictionary<Product, uint> productsDictionary)
         {
             Shop resultShop = null;
-            uint lowestPrice = ShopsRepository.Shops.First().Products[0].Price;
             bool isProductInShop = false;
             foreach ((Product product, uint quantity) in productsDictionary)
             {
-                foreach (var currentShopProduct in ShopsRepository.Shops.SelectMany(currentShop => currentShop.Products))
+                foreach (Product currentProduct in
+                    from currentShop in ShopsRepository.Shops
+                    from currentProduct in currentShop.Products
+                    where currentProduct.Name == product.Name
+                    select currentProduct)
                 {
-                    if (currentShopProduct.Name == product.Name) isProductInShop = true;
-                    if (currentShopProduct.Name == product.Name
-                        && currentShopProduct.Price < lowestPrice)
-                    {
-                        lowestPrice = currentShopProduct.Price;
-                    }
+                    isProductInShop = true;
                 }
 
                 if (isProductInShop == false) throw new ShopException("No such product");
 
-                foreach (Shop currentShop in ShopsRepository.Shops)
+                var listOfPrices =
+                    (from currentShopProduct in ShopsRepository.Shops.SelectMany(currentShop => currentShop.Products)
+                        where currentShopProduct.Name == product.Name && currentShopProduct.Quantity >= quantity
+                        select currentShopProduct.Price).ToList();
+
+                uint lowestPrice = listOfPrices.Min();
+                foreach (Shop currentShop in
+                    from currentShop in ShopsRepository.Shops
+                    from currentShopProduct in currentShop.Products
+                    where currentShopProduct.Name == product.Name && currentShopProduct.Price == lowestPrice
+                    select currentShop)
                 {
-                    foreach (Product currentShopProduct in currentShop.Products)
-                    {
-                        if (currentShopProduct.Name == product.Name
-                            && currentShopProduct.Price == lowestPrice)
-                        {
-                            if (currentShopProduct.Quantity < quantity) throw new ShopException("Insufficient Product");
-                            resultShop = currentShop;
-                        }
-                    }
+                    resultShop = currentShop;
                 }
             }
 
