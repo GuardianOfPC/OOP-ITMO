@@ -60,7 +60,6 @@ namespace Shops.Services
         {
             Shop resultShop = null;
             bool isProductInShop = false;
-            int shopCounter = 0;
             foreach ((Product product, uint quantity) in productsDictionary)
             {
                 foreach (Product currentProduct in from currentShop in ShopsRepository.Shops from currentProduct in currentShop.Products where currentProduct.Name == product.Name select currentProduct)
@@ -72,6 +71,7 @@ namespace Shops.Services
 
                 var listOfPrices = (from currentShopProduct in ShopsRepository.Shops.SelectMany(currentShop => currentShop.Products) where currentShopProduct.Name == product.Name && currentShopProduct.Quantity >= quantity select currentShopProduct.Price).ToList();
                 uint lowestPrice = listOfPrices.Min();
+                int shopCounter = 0;
                 foreach (Shop currentShop in from currentShop in ShopsRepository.Shops from currentShopProduct in currentShop.Products where currentShopProduct.Name == product.Name && currentShopProduct.Price == lowestPrice select currentShop)
                 {
                     if (shopCounter == 0)
