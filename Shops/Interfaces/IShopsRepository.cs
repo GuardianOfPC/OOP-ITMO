@@ -5,10 +5,10 @@ namespace Shops.Interfaces
 {
     public interface IShopsRepository
     {
-        public List<Shop> Shops { get; }
-        public void Add(Shop shop);
-        public void Remove(Shop shop);
-        public Shop UpdateShopProducts(Shop shop, List<Product> products);
-        public bool CheckShop(Shop shop);
+        List<Shop> Shops { get; }
+        void Add(Shop shop);
+        void Remove(Shop shop);
+        Shop UpdateShopProducts(Shop shop, List<Product> products);
+        bool CheckShop(Shop shop);
     }
 }

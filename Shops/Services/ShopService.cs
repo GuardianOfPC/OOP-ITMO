@@ -20,14 +20,9 @@ namespace Shops.Services
 
         public Product RegisterProductAtShop(Product product, Shop shop)
         {
-            var productsList = (List<Product>)shop.Products;
-            productsList.Add(product);
             ShopsRepository.Remove(shop);
-            Shop outShop = shop
-                .ToBuilder()
-                .WithProducts(productsList)
-                .Build();
-            ShopsRepository.Add(outShop);
+            shop = shop.ToBuilder().WithProduct(product).Build();
+            ShopsRepository.Add(shop);
             return product;
         }
 

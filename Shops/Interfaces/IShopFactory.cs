@@ -2,7 +2,7 @@
 {
     public interface IShopFactory
     {
-        public IShopsRepository CreateShopRepository();
-        public IShopService CreateShopService();
+        IShopsRepository CreateShopRepository();
+        IShopService CreateShopService();
     }
 }

@@ -150,6 +150,7 @@ namespace Shops.Tests
 
                   if (product2.Name == current.Name)
                       Assert.True(current.Quantity == 3);
+                  
                   Assert.True(customer.Money == 260);
               }
           }
@@ -196,35 +197,5 @@ namespace Shops.Tests
              }
              Assert.True(customer.Money == 260);
          }
-
-         // [Test]
-         // public void AddProdAAddProdB()
-         // {
-         //     Shop shop = new Shop.ShopBuilder()
-         //         .WithName("Ozon")
-         //         .WithAddress("Moscow City")
-         //         .Build();
-         //     Product product1 = new Product.ProductBuilder()
-         //         .WithName("Молоко")
-         //         .Build();
-         //     Product product2 = new Product.ProductBuilder()
-         //         .WithName("Сыр")
-         //         .Build();
-         //     Customer customer = new Customer.CustomerBuilder()
-         //         .WithName("Alexey")
-         //         .WithMoney(1000)
-         //         .Build();
-         //     _shopService.AddShop(shop);
-         //     _shopService.RegisterProductAtShop(product1, shop);
-         //     _shopService.DeliveryToShop(shop, product1, 10);
-         //     _shopService.SetProductPrice(shop, product1, 100);
-         //     Dictionary<Product, uint> productsDictionary = new ()
-         //     {
-         //         {product1, 5},
-         //         {product2, 2}
-         //     };
-         //     _shopService.MultipleBuy(customer, shop, productsDictionary);
-         //     Assert.True(customer.Money == 500);
-         // }
-     }
+    }
  }
