@@ -1,4 +1,4 @@
-﻿namespace Isu.Services
+﻿namespace Isu.Models
 {
     public enum CourseNumber
     {

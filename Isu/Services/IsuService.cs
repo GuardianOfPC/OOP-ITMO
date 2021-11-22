@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Isu.Models;
 using Isu.Tools;
 
 namespace Isu.Services
@@ -17,7 +18,7 @@ namespace Isu.Services
 
         public Student AddStudent(Group group, string name)
         {
-            if (group.Students.Count > group.GetMaxStudentsCount())
+            if (group.Students.Count > group.MaxStudentCount)
             {
                 throw new IsuException("Students exceeded");
             }
@@ -52,7 +53,7 @@ namespace Isu.Services
             {
                 foreach (Student student in group.Students)
                 {
-                    if (student.GetName() == name)
+                    if (student.Name == name)
                     {
                         return student;
                     }
@@ -66,7 +67,7 @@ namespace Isu.Services
         {
             foreach (Group group in _groups)
             {
-                if (group.GetGroupName() == groupName)
+                if (group.GroupName == groupName)
                 {
                     return (List<Student>)group.Students;
                 }
@@ -79,7 +80,7 @@ namespace Isu.Services
         {
             foreach (Group group in _groups)
             {
-                if (group.GetCourseNumber() == courseNumber)
+                if (group.CourseNumber == courseNumber)
                 {
                     return (List<Student>)group.Students;
                 }
@@ -92,7 +93,7 @@ namespace Isu.Services
         {
             foreach (Group group in _groups)
             {
-                if (group.GetGroupName() == groupName)
+                if (group.GroupName == groupName)
                 {
                     return group;
                 }
@@ -106,7 +107,7 @@ namespace Isu.Services
             List<Group> groups = new ();
             foreach (Group group in _groups)
             {
-                if (group.GetCourseNumber() == courseNumber)
+                if (group.CourseNumber == courseNumber)
                 {
                     groups.Add(group);
                 }
@@ -117,7 +118,7 @@ namespace Isu.Services
 
         public void ChangeStudentGroup(Student student, Group newGroup)
         {
-            Group oldGroup = student.GetGroup();
+            Group oldGroup = student.Group;
 
             if (oldGroup.Equals(newGroup))
             {

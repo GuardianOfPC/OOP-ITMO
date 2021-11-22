@@ -1,0 +1,78 @@
+﻿using System.Collections.Generic;
+
+namespace IsuExtra.Models
+{
+    public class StreamGroup
+    {
+        private readonly List<Lesson> _lessons;
+        private readonly List<StreamStudent> _streamStudents;
+        private StreamGroup(string name, List<StreamStudent> streamStudents, List<Lesson> lessons, Ognp ognp, int maxStudentCount)
+        {
+            Name = name;
+            _streamStudents = new List<StreamStudent>(streamStudents);
+            _lessons = new List<Lesson>(lessons);
+            Ognp = ognp;
+            MaxStudentCount = maxStudentCount;
+        }
+
+        public string Name { get; }
+        public int MaxStudentCount { get; }
+        public IReadOnlyList<Lesson> Lessons => _lessons;
+        public IReadOnlyList<StreamStudent> StreamStudents => _streamStudents;
+        public Ognp Ognp { get; }
+
+        public StreamGroupBuilder ToBuild()
+        {
+            StreamGroupBuilder streamGroupBuilder = new ();
+            streamGroupBuilder
+                .WithLessons((List<Lesson>)Lessons)
+                .WithOgnp(Ognp);
+            return streamGroupBuilder;
+        }
+
+        public class StreamGroupBuilder
+        {
+            private string _name;
+            private List<Lesson> _lessons = new ();
+            private List<StreamStudent> _streamStudents = new ();
+            private Ognp _ognp;
+            private int _maxStudentCount;
+
+            public StreamGroupBuilder WithMaxStudentCount(int val)
+            {
+                _maxStudentCount = val;
+                return this;
+            }
+
+            public StreamGroupBuilder WithStreamStudents(List<StreamStudent> streamStudents)
+            {
+                _streamStudents = streamStudents;
+                return this;
+            }
+
+            public StreamGroupBuilder WithName(string name)
+            {
+                _name = name;
+                return this;
+            }
+
+            public StreamGroupBuilder WithLessons(List<Lesson> lessons)
+            {
+                _lessons = lessons;
+                return this;
+            }
+
+            public StreamGroupBuilder WithOgnp(Ognp ognp)
+            {
+                _ognp = ognp;
+                return this;
+            }
+
+            public StreamGroup Build()
+            {
+                StreamGroup final = new (_name, _streamStudents, _lessons, _ognp, _maxStudentCount);
+                return final;
+            }
+        }
+    }
+}

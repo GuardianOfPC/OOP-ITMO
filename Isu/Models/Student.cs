@@ -1,34 +1,25 @@
 ﻿using System;
 
-namespace Isu.Services
+namespace Isu.Models
 {
     public class Student
     {
-        private readonly Guid _id;
-        private readonly string _name;
-        private readonly Group _group;
-
         private Student(string name, Group group)
         {
-            _id = Guid.NewGuid();
-            _name = name;
-            _group = group;
+            Id = Guid.NewGuid();
+            Name = name;
+            Group = group;
         }
 
-        public Guid Id => _id;
-        public string GetName()
-        {
-            return _name;
-        }
-
-        public Group GetGroup()
-        {
-            return _group;
-        }
+        public string Name { get; }
+        public Group Group { get; }
+        public Guid Id { get; }
 
         public StudentBuilder ToBuilder()
         {
-            StudentBuilder studentBuilder = new StudentBuilder().WithGroup(_group).WithName(_name);
+            StudentBuilder studentBuilder = new StudentBuilder()
+                .WithGroup(Group)
+                .WithName(Name);
             return studentBuilder;
         }
 
