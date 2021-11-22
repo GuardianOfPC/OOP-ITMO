@@ -57,6 +57,12 @@ namespace Shops.Models
                 return this;
             }
 
+            public ShopBuilder WithProduct(Product product)
+            {
+                _products.Add(product);
+                return this;
+            }
+
             public Shop Build()
             {
                 Shop finalShop = new (_name, _address, _products);
