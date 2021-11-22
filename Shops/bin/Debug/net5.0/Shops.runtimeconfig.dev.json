@@ -1,8 +1,0 @@
-{
-  "runtimeOptions": {
-    "additionalProbingPaths": [
-      "C:\\Users\\conik\\.dotnet\\store\\|arch|\\|tfm|",
-      "C:\\Users\\conik\\.nuget\\packages"
-    ]
-  }
-}
