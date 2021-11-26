@@ -29,14 +29,7 @@ namespace Backups.Backups_Models
             RestorePoints.Add(point);
         }
 
-        public void AddJobObject(JobObject jobObject)
-        {
-            JobObjects.Add(jobObject);
-        }
-
-        public void RemoveJobObject(JobObject jobObject)
-        {
-            JobObjects.Remove(jobObject);
-        }
+        public void AddJobObject(JobObject jobObject) => JobObjects.Add(jobObject);
+        public void RemoveJobObject(JobObject jobObject) => JobObjects.Remove(jobObject);
     }
 }
