@@ -2,6 +2,14 @@
 {
     public class Storage
     {
-        public Job JobObject { get; set; }
+        public Storage() { }
+        public Storage(string storageName, string storagePath)
+        {
+            StorageName = storageName;
+            StoragePath = storagePath;
+        }
+
+        public string StorageName { get; set; }
+        public string StoragePath { get; set; }
     }
 }

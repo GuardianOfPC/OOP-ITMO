@@ -5,7 +5,15 @@ namespace Backups.Backups_Models
 {
     public class RestorePoint
     {
-        public DateTime Date { get; set; }
-        public List<object> Objects { get; set; }
+        public RestorePoint(List<Storage> storages, uint restorePointNumber)
+        {
+            Date = DateTime.Now;
+            Storages = storages;
+            RestorePointNumber = restorePointNumber;
+        }
+
+        public DateTime Date { get; }
+        public List<Storage> Storages { get; }
+        public uint RestorePointNumber { get; }
     }
 }
