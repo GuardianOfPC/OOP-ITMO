@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using Backups.Backups_Models;
 using Backups.Interfaces;
 
-namespace Backups.Backups_Models
+namespace Backups.Repositories
 {
     public class FsRepository : IRepository
     {
@@ -11,7 +12,6 @@ namespace Backups.Backups_Models
         {
             List<Storage> storages = new ();
             List<JobObject> jobObjects = new (backupJob.JobObjects);
-            uint currentRestorePointCount = backupJob.RestorePointsNumber;
 
             foreach (JobObject jobObject in jobObjects)
             {

@@ -1,4 +1,5 @@
 ﻿using Backups.Backups_Models;
+using Backups.Repositories;
 using Backups.Tools;
 
 namespace Backups.FS.Tests
@@ -16,6 +17,16 @@ namespace Backups.FS.Tests
             backupJob.CreateRestorePoint();
             backupJob.RemoveJobObject(jobObject1);
             backupJob.CreateRestorePoint();
+            
+            BackupJob backupJob1 = new ("Test1", new FsRepository(), new SplitStorageStrategy());
+            JobObject jobObject11 = new("file3", "./file3");
+            JobObject jobObject22 = new("file4", "./file4");
+            
+            backupJob1.AddJobObject(jobObject11);
+            backupJob1.AddJobObject(jobObject22);
+            backupJob1.CreateRestorePoint();
+            backupJob1.RemoveJobObject(jobObject11);
+            backupJob1.CreateRestorePoint();
         }
     }
 }

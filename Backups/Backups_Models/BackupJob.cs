@@ -24,7 +24,8 @@ namespace Backups.Backups_Models
         public void CreateRestorePoint()
         {
             List<Storage> storages = Repository.StorageCreation(this);
-            RestorePoint point = new (storages, RestorePointsNumber++);
+            RestorePoint point = new (storages);
+            RestorePointsNumber++;
             RestorePoints.Add(point);
         }
 

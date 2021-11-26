@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Backups.Backups_Models
+﻿namespace Backups.Backups_Models
 {
     public class JobObject
     {
