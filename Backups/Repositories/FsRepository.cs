@@ -11,9 +11,8 @@ namespace Backups.Repositories
         public List<Storage> StorageCreation(BackupJob backupJob)
         {
             List<Storage> storages = new ();
-            List<JobObject> jobObjects = new (backupJob.JobObjects);
 
-            foreach (JobObject jobObject in jobObjects)
+            foreach (JobObject jobObject in backupJob.JobObjects)
             {
                 Storage storage = backupJob.StorageMethodStrategy
                     .CreateStorage(jobObject, backupJob.RestorePointsNumber, backupJob.Name);

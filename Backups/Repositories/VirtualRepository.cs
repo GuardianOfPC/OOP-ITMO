@@ -9,9 +9,7 @@ namespace Backups.Repositories
     {
         public List<Storage> StorageCreation(BackupJob backupJob)
         {
-            List<JobObject> jobObjects = new (backupJob.JobObjects);
-
-            return jobObjects.Select(jobObject => backupJob.StorageMethodStrategy.CreateStorage(jobObject, backupJob.RestorePointsNumber, backupJob.Name)).ToList();
+            return backupJob.JobObjects.Select(jobObject => backupJob.StorageMethodStrategy.CreateStorage(jobObject, backupJob.RestorePointsNumber, backupJob.Name)).ToList();
         }
     }
 }
