@@ -10,7 +10,6 @@ namespace Backups.Tools
         {
             Storage storage = new ();
             storage.StorageName = $"{jobObject.FileName}_{restorePointNumber}";
-            Directory.CreateDirectory($"./{backupJobName}/RestorePoint_{restorePointNumber}");
             storage.StoragePath = $"./{backupJobName}/RestorePoint_{restorePointNumber}/{storage.StorageName}.zip";
             return storage;
         }
