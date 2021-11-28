@@ -15,7 +15,7 @@ namespace Backups.Repositories
             foreach (JobObject jobObject in backupJob.JobObjects)
             {
                 Storage storage = backupJob.StorageMethodStrategy
-                    .CreateStorage(jobObject, backupJob.RestorePointsNumber, backupJob.Name);
+                    .CreateStorage(jobObject, backupJob.RestorePoints.Count, backupJob.Name);
                 ZipArchive zipArchive = ZipFile
                     .Open(storage.StoragePath, File.Exists(storage.StoragePath) ? ZipArchiveMode.Update : ZipArchiveMode.Create);
                 zipArchive.CreateEntryFromFile(jobObject.FilePath, jobObject.FileName);

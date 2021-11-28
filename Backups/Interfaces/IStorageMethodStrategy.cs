@@ -5,6 +5,6 @@ namespace Backups.Interfaces
 {
     public interface IStorageMethodStrategy
     {
-        Storage CreateStorage(JobObject jobObject, uint restorePointNumber, string backupJobName);
+        Storage CreateStorage(JobObject jobObject, int restorePointNumber, string backupJobName);
     }
 }

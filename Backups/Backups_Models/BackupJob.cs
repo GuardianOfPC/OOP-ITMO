@@ -15,7 +15,6 @@ namespace Backups.Backups_Models
         }
 
         public string Name { get; }
-        public uint RestorePointsNumber { get; private set; } = 1;
         public List<JobObject> JobObjects { get; }
         public List<RestorePoint> RestorePoints { get; }
         public IStorageMethodStrategy StorageMethodStrategy { get; }
@@ -25,7 +24,6 @@ namespace Backups.Backups_Models
         {
             List<Storage> storages = Repository.StorageCreation(this);
             RestorePoint point = new (storages);
-            RestorePointsNumber++;
             RestorePoints.Add(point);
         }
 

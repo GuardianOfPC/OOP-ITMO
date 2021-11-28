@@ -5,11 +5,11 @@ namespace Backups.Tools
 {
     public class SingleStorageStrategy : IStorageMethodStrategy
     {
-        public Storage CreateStorage(JobObject jobObject, uint restorePointNumber, string backupJobName)
+        public Storage CreateStorage(JobObject jobObject, int restorePointNumber, string backupJobName)
         {
-            Storage storage = new ();
-            storage.StorageName = $"{jobObject.FileName}_{restorePointNumber}";
-            storage.StoragePath = $"./{backupJobName}/RestorePoint_{restorePointNumber}.zip";
+            string storageName = $"{jobObject.FileName}_{restorePointNumber}";
+            string storagePath = $"./{backupJobName}/RestorePoint_{restorePointNumber}.zip";
+            Storage storage = new (storageName, storagePath);
             return storage;
         }
     }
