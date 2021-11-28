@@ -27,6 +27,7 @@ namespace Backups.Backups_Models
             RestorePoints.Add(point);
         }
 
+        public int CountRestorePoints() => RestorePoints.Count;
         public void AddJobObject(JobObject jobObject) => JobObjects.Add(jobObject);
         public void RemoveJobObject(JobObject jobObject) => JobObjects.Remove(jobObject);
     }

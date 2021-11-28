@@ -9,7 +9,7 @@ namespace Backups.Repositories
     {
         public List<Storage> StorageCreation(BackupJob backupJob)
         {
-            return backupJob.JobObjects.Select(jobObject => backupJob.StorageMethodStrategy.CreateStorage(jobObject, backupJob.RestorePoints.Count, backupJob.Name)).ToList();
+            return backupJob.JobObjects.Select(jobObject => backupJob.StorageMethodStrategy.CreateStorage(jobObject, backupJob.CountRestorePoints(), backupJob.Name)).ToList();
         }
     }
 }
