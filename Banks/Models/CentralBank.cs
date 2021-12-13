@@ -9,22 +9,30 @@ namespace Banks.Models
             BankRepository = bankRepository;
         }
 
-        private delegate void AccountHandler(int days);
-        private event AccountHandler ChargeInterest;
-        private event AccountHandler ChargeCommission;
+        public event Bank.AccountHandler AddInterest;
+        public event Bank.AccountHandler ChargeCommission;
         public IBankRepository BankRepository { get; }
 
-        private uint DaysFromCentralBankCreation { get; set; }
+        public uint DaysFromCentralBankCreation { get; set; }
 
         public uint ForwardTime(uint value)
         {
             DaysFromCentralBankCreation += value;
+            if ((DaysFromCentralBankCreation % 30) == 0)
+            {
+                ChargeCommission?.Invoke();
+                AddInterest?.Invoke();
+            }
+
             return DaysFromCentralBankCreation;
         }
+
+        public void TransferMoney(Client client1, Client )
 
         public Bank RegisterBank(Bank bank)
         {
             BankRepository.AddBank(bank);
+            bank.CentralBank = this;
             return bank;
         }
     }

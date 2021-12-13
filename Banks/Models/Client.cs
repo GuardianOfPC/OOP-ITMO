@@ -4,7 +4,7 @@
     {
         private Client(string firstName, string lastName, string homeAddress, uint passportNumber)
         {
-            if (homeAddress == HomeAddress || passportNumber == PassportNumber) SuspiciousAccountFlag = true;
+            if (homeAddress == string.Empty || passportNumber == 0) SuspiciousAccountFlag = true;
             else SuspiciousAccountFlag = false;
             FirstName = firstName;
             LastName = lastName;
@@ -12,11 +12,30 @@
             PassportNumber = passportNumber;
         }
 
+        public delegate string ClientSubscription(double value, BankPolicyChangeTypes type);
+
         public string FirstName { get; }
+
         public string LastName { get; }
+
         public string HomeAddress { get; }
+
         public uint PassportNumber { get; }
+
         public bool SuspiciousAccountFlag { get; }
+
+        public void SubscribeToBankPolicyChanges(Bank bank)
+        {
+            bank.InterestRateChanged += BankPolicyChange;
+            bank.CommissionRateChanged += BankPolicyChange;
+            bank.TransferLimitChanged += BankPolicyChange;
+        }
+
+        public string BankPolicyChange(double value, BankPolicyChangeTypes type)
+        {
+            string msg = $"${type} changed by {value}";
+            return msg;
+        }
 
         public ClientBuilder ToBuild()
         {

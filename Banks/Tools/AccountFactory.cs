@@ -1,24 +1,43 @@
-﻿using Banks.Interfaces;
+﻿using System.Collections.Generic;
+using Banks.Interfaces;
 using Banks.Models;
+using Banks.Models.Accounts;
 
 namespace Banks.Tools
 {
     public class AccountFactory : IAccountFactory
     {
-        private Client Client { get; }
-        public DebitAccount CreateDebitAccount()
+        public AccountFactory(Bank bank)
         {
-            throw new System.NotImplementedException();
+            Bank = bank;
         }
 
-        public DepositAccount CreateDepositAccount()
+        private Bank Bank { get; }
+        public DebitAccount OpenDebitAccount(Client client)
         {
-            throw new System.NotImplementedException();
+            DebitAccount account = new (client, Bank);
+            List<IAccount> accounts = Bank.Accounts;
+            accounts.Add(account);
+            Bank.CentralBank.BankRepository.UpdateBankAccounts(Bank, accounts);
+            return account;
         }
 
-        public CreditAccount CreateCreditAccount()
+        public DepositAccount OpenDepositAccount(Client client, int expireDate, double depositAmount)
         {
-            throw new System.NotImplementedException();
+            DepositAccount account = new (client, Bank, expireDate, depositAmount);
+            List<IAccount> accounts = Bank.Accounts;
+            accounts.Add(account);
+            Bank.CentralBank.BankRepository.UpdateBankAccounts(Bank, accounts);
+            return account;
+        }
+
+        public CreditAccount OpenCreditAccount(Client client, double limit)
+        {
+            CreditAccount account = new (client, Bank, limit);
+            List<IAccount> accounts = Bank.Accounts;
+            accounts.Add(account);
+            Bank.CentralBank.BankRepository.UpdateBankAccounts(Bank, accounts);
+            return account;
         }
     }
 }
