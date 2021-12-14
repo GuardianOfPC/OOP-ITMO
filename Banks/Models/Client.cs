@@ -1,6 +1,10 @@
-﻿namespace Banks.Models
+﻿using System;
+using System.Linq;
+using Banks.Models.Accounts;
+
+namespace Banks.Models
 {
-    public class Client
+    public class Client : IEquatable<Client>
     {
         private Client(string firstName, string lastName, string homeAddress, uint passportNumber)
         {
@@ -26,15 +30,40 @@
 
         public void SubscribeToBankPolicyChanges(Bank bank)
         {
-            bank.InterestRateChanged += BankPolicyChange;
-            bank.CommissionRateChanged += BankPolicyChange;
-            bank.TransferLimitChanged += BankPolicyChange;
+            if (bank.Accounts.Exists(account => account.Client.Equals(this) && account is DebitAccount))
+                bank.DebitInterestRateChanged += BankPolicyChangeNotification;
+            if (bank.Accounts.Exists(account => account.Client.Equals(this) && account is DepositAccount))
+                bank.DepositInterestsRatesChanged += BankPolicyChangeNotification;
+            if (bank.Accounts.Exists(account => account.Client.Equals(this) && account is CreditAccount))
+                bank.CommissionRateChanged += BankPolicyChangeNotification;
+            if (SuspiciousAccountFlag)
+                bank.TransferLimitChanged += BankPolicyChangeNotification;
         }
 
-        public string BankPolicyChange(double value, BankPolicyChangeTypes type)
+        public string BankPolicyChangeNotification(double value, BankPolicyChangeTypes type)
         {
             string msg = $"${type} changed by {value}";
             return msg;
+        }
+
+        public bool Equals(Client other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return FirstName == other.FirstName && LastName == other.LastName && HomeAddress == other.HomeAddress && PassportNumber == other.PassportNumber;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Client)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(FirstName, LastName, HomeAddress, PassportNumber);
         }
 
         public ClientBuilder ToBuild()

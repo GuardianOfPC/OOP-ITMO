@@ -16,9 +16,8 @@ namespace Banks.Models.Accounts
         public Client Client { get; }
         public Bank Bank { get; }
         public double Money { get; set; }
-        private double InterestAmount { get; set; }
         private List<double> InterestsAmounts { get; } = new ();
-        public void WithdrawMoney(int value)
+        public void WithdrawMoney(double value)
         {
             if (Client.SuspiciousAccountFlag)
             {
@@ -29,18 +28,18 @@ namespace Banks.Models.Accounts
             Money -= value;
             TransactionLog log = new (this, default, Bank, default, value, TransactionTypes.Withdraw);
             Bank.TransactionLogs.Add(log);
-            InterestsAmounts.Add((Bank.InterestRate / 365 * 0.01) * Money);
+            InterestsAmounts.Add((Bank.DebitInterestRate / 365 * 0.01) * Money);
         }
 
-        public void RefillMoney(int value)
+        public void RefillMoney(double value)
         {
             Money += value;
             TransactionLog log = new (this, default, Bank, default, value, TransactionTypes.Refill);
             Bank.TransactionLogs.Add(log);
-            InterestsAmounts.Add((Bank.InterestRate / 365 * 0.01) * Money);
+            InterestsAmounts.Add(((Bank.DebitInterestRate / 365) * 0.01) * Money);
         }
 
-        public void TransferMoney(IAccount account, Bank bank, int value)
+        public TransactionLog TransferMoney(IAccount account, Bank bank, double value)
         {
             if (Money - value < 0) throw new Exception("Couldn't withdraw money - will be broke");
             if (Client.SuspiciousAccountFlag)
@@ -49,17 +48,21 @@ namespace Banks.Models.Accounts
             }
 
             Money -= value;
-            List<IAccount> accounts = bank.Accounts;
-            IAccount neededAccount = accounts.Find(x => x.Equals(account));
-            neededAccount.Money += value;
-            accounts.Add(neededAccount);
-            Bank.CentralBank.BankRepository.UpdateBankAccounts(bank, accounts);
+            Bank.CentralBank.TransferMoneyAcrossBanks(account, bank, value);
             TransactionLog log = new (this, account, Bank, bank, value, TransactionTypes.Transfer);
             Bank.TransactionLogs.Add(log);
-            InterestsAmounts.Add((Bank.InterestRate / 365 * 0.01) * Money);
+            InterestsAmounts.Add((Bank.DebitInterestRate / 365 * 0.01) * Money);
+            return log;
         }
 
-        public void AddInterest() => Money += CalculateInterestAmount();
+        public void AddInterest()
+        {
+            int regularDays = 30 - InterestsAmounts.Count;
+            double notRegularInterest = InterestsAmounts.Sum();
+            double finalInterest = ((Bank.DebitInterestRate / 365 * 0.01) * Money * regularDays) + notRegularInterest;
+            Money += finalInterest;
+        }
+
         public void ChargeCommission()
         {
             throw new NotImplementedException();
@@ -83,14 +86,6 @@ namespace Banks.Models.Accounts
         public override int GetHashCode()
         {
             return HashCode.Combine(Client, Bank, Money);
-        }
-
-        private double CalculateInterestAmount()
-        {
-            int regularDays = 30 - InterestsAmounts.Count;
-            double notRegularInterest = InterestsAmounts.Sum();
-            InterestAmount = ((Bank.InterestRate / 365 * 0.01) * Money * regularDays) + notRegularInterest;
-            return InterestAmount;
         }
     }
 }

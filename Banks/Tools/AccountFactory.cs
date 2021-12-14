@@ -7,36 +7,30 @@ namespace Banks.Tools
 {
     public class AccountFactory : IAccountFactory
     {
-        public AccountFactory(Bank bank)
+        public DebitAccount OpenDebitAccount(Client client, Bank bank)
         {
-            Bank = bank;
-        }
-
-        private Bank Bank { get; }
-        public DebitAccount OpenDebitAccount(Client client)
-        {
-            DebitAccount account = new (client, Bank);
-            List<IAccount> accounts = Bank.Accounts;
+            DebitAccount account = new (client, bank);
+            List<IAccount> accounts = bank.Accounts;
             accounts.Add(account);
-            Bank.CentralBank.BankRepository.UpdateBankAccounts(Bank, accounts);
+            bank.CentralBank.BankRepository.UpdateBankAccounts(bank, accounts);
             return account;
         }
 
-        public DepositAccount OpenDepositAccount(Client client, int expireDate, double depositAmount)
+        public DepositAccount OpenDepositAccount(Client client, Bank bank, int expireDate, double depositAmount)
         {
-            DepositAccount account = new (client, Bank, expireDate, depositAmount);
-            List<IAccount> accounts = Bank.Accounts;
+            DepositAccount account = new (client, bank, expireDate, depositAmount);
+            List<IAccount> accounts = bank.Accounts;
             accounts.Add(account);
-            Bank.CentralBank.BankRepository.UpdateBankAccounts(Bank, accounts);
+            bank.CentralBank.BankRepository.UpdateBankAccounts(bank, accounts);
             return account;
         }
 
-        public CreditAccount OpenCreditAccount(Client client, double limit)
+        public CreditAccount OpenCreditAccount(Client client, Bank bank, double limit)
         {
-            CreditAccount account = new (client, Bank, limit);
-            List<IAccount> accounts = Bank.Accounts;
+            CreditAccount account = new (client, bank, limit);
+            List<IAccount> accounts = bank.Accounts;
             accounts.Add(account);
-            Bank.CentralBank.BankRepository.UpdateBankAccounts(Bank, accounts);
+            bank.CentralBank.BankRepository.UpdateBankAccounts(bank, accounts);
             return account;
         }
     }

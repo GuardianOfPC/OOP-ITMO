@@ -1,4 +1,5 @@
-﻿using Banks.Interfaces;
+﻿using System.Collections.Generic;
+using Banks.Interfaces;
 
 namespace Banks.Models
 {
@@ -12,10 +13,9 @@ namespace Banks.Models
         public event Bank.AccountHandler AddInterest;
         public event Bank.AccountHandler ChargeCommission;
         public IBankRepository BankRepository { get; }
+        public uint DaysFromCentralBankCreation { get; private set; }
 
-        public uint DaysFromCentralBankCreation { get; set; }
-
-        public uint ForwardTime(uint value)
+        public void ForwardTime(uint value)
         {
             DaysFromCentralBankCreation += value;
             if ((DaysFromCentralBankCreation % 30) == 0)
@@ -23,16 +23,23 @@ namespace Banks.Models
                 ChargeCommission?.Invoke();
                 AddInterest?.Invoke();
             }
-
-            return DaysFromCentralBankCreation;
         }
 
-        public void TransferMoney(Client client1, Client )
+        public void TransferMoneyAcrossBanks(IAccount accountTo, Bank bankTo, double value)
+        {
+            List<IAccount> accounts = bankTo.Accounts;
+            IAccount neededAccount = accounts.Find(x => x.Equals(accountTo));
+            accounts.Remove(neededAccount);
+            neededAccount.Money += value;
+            accounts.Add(neededAccount);
+            BankRepository.UpdateBankAccounts(bankTo, accounts);
+        }
 
         public Bank RegisterBank(Bank bank)
         {
             BankRepository.AddBank(bank);
             bank.CentralBank = this;
+            bank.SubscribeToChanges();
             return bank;
         }
     }

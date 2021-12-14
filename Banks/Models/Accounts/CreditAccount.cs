@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Banks.Interfaces;
 
 namespace Banks.Models.Accounts
@@ -18,45 +17,41 @@ namespace Banks.Models.Accounts
         public Bank Bank { get; }
         public double Money { get; set; }
         public double CreditLimit { get; }
-        public double CommissionAmount { get; private set; }
 
-        public void WithdrawMoney(int value)
+        public void WithdrawMoney(double value)
         {
             if (Client.SuspiciousAccountFlag)
             {
                 if (value > Bank.TransferLimit) throw new Exception("Transfer limit exceeded");
             }
 
-            if (Money < 0 && Math.Abs(Money - value) > CreditLimit) throw new Exception("Credit limit exceeded");
+            if (Money <= 0 && Math.Abs(Money - value) > CreditLimit) throw new Exception("Credit limit exceeded");
 
             Money -= value;
             TransactionLog log = new (this, default, Bank, default, value, TransactionTypes.Withdraw);
             Bank.TransactionLogs.Add(log);
         }
 
-        public void RefillMoney(int value)
+        public void RefillMoney(double value)
         {
             Money += value;
             TransactionLog log = new (this, default, Bank, default, value, TransactionTypes.Refill);
             Bank.TransactionLogs.Add(log);
         }
 
-        public void TransferMoney(IAccount account, Bank bank, int value)
+        public TransactionLog TransferMoney(IAccount account, Bank bank, double value)
         {
             if (Client.SuspiciousAccountFlag)
             {
                 if (value > Bank.TransferLimit) throw new Exception("Transfer limit exceeded");
             }
 
-            if (Money < 0 && Math.Abs(Money - value) > CreditLimit) throw new Exception("Credit limit exceeded");
+            if (Money <= 0 && Math.Abs(Money - value) > CreditLimit) throw new Exception("Credit limit exceeded");
             Money -= value;
-            List<IAccount> accounts = bank.Accounts;
-            IAccount neededAccount = accounts.Find(x => x.Equals(account));
-            neededAccount.Money += value;
-            accounts.Add(neededAccount);
-            Bank.CentralBank.BankRepository.UpdateBankAccounts(bank, accounts);
+            Bank.CentralBank.TransferMoneyAcrossBanks(account, bank, value);
             TransactionLog log = new (this, account, Bank, bank, value, TransactionTypes.Transfer);
             Bank.TransactionLogs.Add(log);
+            return log;
         }
 
         public void AddInterest()
@@ -66,7 +61,9 @@ namespace Banks.Models.Accounts
 
         public void ChargeCommission()
         {
-            if (Money < 0) Money -= CommissionAmount;
+            if (!(Money < 0)) return;
+            double commissionFinal = (Bank.CommissionRate * 0.01) * Math.Abs(Money);
+            Money -= commissionFinal;
         }
 
         public bool Equals(CreditAccount other)
@@ -87,11 +84,6 @@ namespace Banks.Models.Accounts
         public override int GetHashCode()
         {
             return HashCode.Combine(Client, Bank, Money, CreditLimit);
-        }
-
-        private double CalculateCommission()
-        {
-            return CommissionAmount = (Bank.CommissionRate * 0.01) * Math.Abs(Money);
         }
     }
 }

@@ -8,9 +8,9 @@ namespace Banks.Interfaces
         Client Client { get; }
         Bank Bank { get; }
         double Money { get; set; }
-        void WithdrawMoney(int value);
-        void RefillMoney(int value);
-        void TransferMoney(IAccount account, Bank bank, int value);
+        void WithdrawMoney(double value);
+        void RefillMoney(double value);
+        TransactionLog TransferMoney(IAccount account, Bank bank, double value);
         void AddInterest();
         void ChargeCommission();
     }

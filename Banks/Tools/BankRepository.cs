@@ -16,6 +16,11 @@ namespace Banks.Tools
             return _banks.Find(x => x.Equals(bank));
         }
 
+        public Bank GetBankByName(string name)
+        {
+            return _banks.Find(x => x.BankName == name);
+        }
+
         public List<Bank> GetBanks()
         {
             return _banks;
@@ -28,7 +33,5 @@ namespace Banks.Tools
             neededBank.Accounts = accounts;
             _banks.Add(neededBank);
         }
-        
-        public void UpdateBank(Bank bank)
     }
 }

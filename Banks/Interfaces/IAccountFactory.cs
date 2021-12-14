@@ -5,8 +5,8 @@ namespace Banks.Interfaces
 {
     public interface IAccountFactory
     {
-        DebitAccount OpenDebitAccount(Client client);
-        DepositAccount OpenDepositAccount(Client client, int expireDate, double depositAmount);
-        CreditAccount OpenCreditAccount(Client client, double limit);
+        DebitAccount OpenDebitAccount(Client client, Bank bank);
+        DepositAccount OpenDepositAccount(Client client, Bank bank, int expireDate, double depositAmount);
+        CreditAccount OpenCreditAccount(Client client, Bank bank, double limit);
     }
 }

@@ -7,17 +7,14 @@ namespace Banks.Models
 {
     public class Bank : IEquatable<Bank>
     {
-        public Bank(IAccountFactory accountFactory, Dictionary<double, int> depositInterests)
+        public Bank(string name, IAccountFactory accountFactory)
         {
+            BankName = name;
             AccountFactory = accountFactory;
-            DepositInterests = depositInterests;
-            CentralBank.AddInterest += AddInterestToAccounts;
-            CentralBank.ChargeCommission += ChargeCommissionsFromAccounts;
         }
 
         public delegate void AccountHandler();
-
-        public event Client.ClientSubscription InterestRateChanged;
+        public event Client.ClientSubscription DebitInterestRateChanged;
         public event Client.ClientSubscription DepositInterestsRatesChanged;
         public event Client.ClientSubscription CommissionRateChanged;
         public event Client.ClientSubscription TransferLimitChanged;
@@ -25,19 +22,33 @@ namespace Banks.Models
         public List<Client> Clients { get; } = new ();
         public List<IAccount> Accounts { get; set; } = new ();
         public List<TransactionLog> TransactionLogs { get; } = new ();
-        public Dictionary<double, int> DepositInterests { get; private set; }
-
         public IAccountFactory AccountFactory { get; }
-        public double InterestRate { get; private set; }
+        public Dictionary<double, int> DepositInterests { get; private set; }
+        public string BankName { get; }
+        public double DebitInterestRate { get; private set; }
         public double CommissionRate { get; private set; }
         public double TransferLimit { get; private set; }
 
-        public void AddClient(Client client) => Clients.Add(client);
-
-        public void ChangeInterestRate(uint value)
+        public void SubscribeToChanges()
         {
-            InterestRate = value;
-            InterestRateChanged?.Invoke(value, BankPolicyChangeTypes.InterestRate);
+            CentralBank.AddInterest += AddInterestToAccounts;
+            CentralBank.ChargeCommission += ChargeCommissionsFromAccounts;
+        }
+
+        public void RegisterClient(Client client) => Clients.Add(client);
+
+        public IAccount OpenAccount(Client client, AccountType type, int expirationDate, double amount)
+        {
+            if (type == AccountType.Debit) return AccountFactory.OpenDebitAccount(client, this);
+            if (type == AccountType.Deposit) return AccountFactory.OpenDepositAccount(client, this, expirationDate, amount);
+            if (type == AccountType.Credit) return AccountFactory.OpenCreditAccount(client, this, amount);
+            return null;
+        }
+
+        public void ChangeDebitInterestRate(double value)
+        {
+            DebitInterestRate = value;
+            DebitInterestRateChanged?.Invoke(value, BankPolicyChangeTypes.InterestRate);
         }
 
         public void ChangeDepositInterestsRate(Dictionary<double, int> set)
@@ -58,7 +69,7 @@ namespace Banks.Models
             }
         }
 
-        public void ChangeCommissionRate(uint value)
+        public void ChangeCommissionRate(double value)
         {
             CommissionRate = value;
             CommissionRateChanged?.Invoke(value, BankPolicyChangeTypes.CommissionRate);
@@ -72,7 +83,7 @@ namespace Banks.Models
             }
         }
 
-        public void ChangeTransferLimit(uint value)
+        public void ChangeTransferLimit(double value)
         {
             TransferLimit = value;
             TransferLimitChanged?.Invoke(value, BankPolicyChangeTypes.TransferLimit);
@@ -90,6 +101,7 @@ namespace Banks.Models
                     neededAccount.Money += log.Amount;
                     accounts.Add(neededAccount);
                     centralBank.BankRepository.UpdateBankAccounts(neededBank, accounts);
+                    log.BankFrom.TransactionLogs.Remove(log);
                     break;
                 }
 
@@ -101,6 +113,7 @@ namespace Banks.Models
                     neededAccount.Money -= log.Amount;
                     accounts.Add(neededAccount);
                     centralBank.BankRepository.UpdateBankAccounts(neededBank, accounts);
+                    log.BankFrom.TransactionLogs.Remove(log);
                     break;
                 }
 
@@ -113,12 +126,13 @@ namespace Banks.Models
                     accountsFrom.Add(neededAccountFrom);
                     centralBank.BankRepository.UpdateBankAccounts(bankFrom, accountsFrom);
 
-                    Bank bankTo = centralBank.BankRepository.GetBank(log.BankFrom);
+                    Bank bankTo = centralBank.BankRepository.GetBank(log.BankTo);
                     List<IAccount> accountsTo = bankTo.Accounts;
                     IAccount neededAccountTo = accountsTo.Find(x => x.Equals(log.AccountTo));
                     neededAccountTo.Money -= log.Amount;
                     accountsTo.Add(neededAccountTo);
                     centralBank.BankRepository.UpdateBankAccounts(bankTo, accountsTo);
+                    log.BankFrom.TransactionLogs.Remove(log);
                     break;
                 }
 
@@ -143,7 +157,7 @@ namespace Banks.Models
                    Equals(
                        AccountFactory,
                        other.AccountFactory) &&
-                   InterestRate == other.InterestRate &&
+                   DebitInterestRate == other.DebitInterestRate &&
                    CommissionRate == other.CommissionRate &&
                    TransferLimit == other.TransferLimit;
         }
@@ -158,7 +172,7 @@ namespace Banks.Models
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Clients, Accounts, TransactionLogs, AccountFactory, InterestRate, CommissionRate, TransferLimit);
+            return HashCode.Combine(Clients, Accounts, TransactionLogs, AccountFactory, DebitInterestRate, CommissionRate, TransferLimit);
         }
     }
 }

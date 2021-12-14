@@ -13,9 +13,9 @@ namespace Banks.Models.Accounts
             Bank = bank;
             ExpirationDate = expirationDate;
             Money = depositAmount;
-            foreach ((double rate, int amount) in bank.DepositInterests)
+            foreach ((double rate, int amount) in bank.DepositInterests.Reverse())
             {
-                if (depositAmount >= amount) continue;
+                if (depositAmount > amount) continue;
                 DepositInterest = rate;
             }
         }
@@ -25,9 +25,8 @@ namespace Banks.Models.Accounts
         public double Money { get; set; }
         public int ExpirationDate { get; }
         public double DepositInterest { get; }
-        private double InterestAmount { get; set; }
         private List<double> InterestsAmounts { get; } = new ();
-        public void WithdrawMoney(int value)
+        public void WithdrawMoney(double value)
         {
             if (Bank.CentralBank.DaysFromCentralBankCreation < ExpirationDate)
                 throw new Exception("Cannot withdraw until expiration date");
@@ -42,7 +41,7 @@ namespace Banks.Models.Accounts
             InterestsAmounts.Add((DepositInterest / 365 * 0.01) * Money);
         }
 
-        public void RefillMoney(int value)
+        public void RefillMoney(double value)
         {
             Money += value;
             TransactionLog log = new (this, default, Bank, default, value, TransactionTypes.Refill);
@@ -50,27 +49,31 @@ namespace Banks.Models.Accounts
             InterestsAmounts.Add((DepositInterest / 365 * 0.01) * Money);
         }
 
-        public void TransferMoney(IAccount account, Bank bank, int value)
+        public TransactionLog TransferMoney(IAccount account, Bank bank, double value)
         {
+            if (Bank.CentralBank.DaysFromCentralBankCreation < ExpirationDate)
+                throw new Exception("Cannot withdraw until expiration date");
             if (Client.SuspiciousAccountFlag)
             {
                 if (value > Bank.TransferLimit) throw new Exception("Transfer limit exceeded");
             }
 
             Money -= value;
-
-            List<IAccount> accounts = bank.Accounts;
-            IAccount neededAccount = accounts.Find(x => x.Equals(account));
-            neededAccount.Money += value;
-            accounts.Add(neededAccount);
-            Bank.CentralBank.BankRepository.UpdateBankAccounts(bank, accounts);
-
+            Bank.CentralBank.TransferMoneyAcrossBanks(account, bank, value);
             TransactionLog log = new (this, account, Bank, bank, value, TransactionTypes.Transfer);
             Bank.TransactionLogs.Add(log);
             InterestsAmounts.Add((DepositInterest / 365 * 0.01) * Money);
+            return log;
         }
 
-        public void AddInterest() => Money += CalculateInterestAmount();
+        public void AddInterest()
+        {
+            int regularDays = 30 - InterestsAmounts.Count;
+            double notRegularInterest = InterestsAmounts.Sum();
+            double finalInterest = ((DepositInterest / 365 * 0.01) * Money * regularDays) + notRegularInterest;
+            Money += finalInterest;
+        }
+
         public void ChargeCommission()
         {
             throw new NotImplementedException();
@@ -94,14 +97,6 @@ namespace Banks.Models.Accounts
         public override int GetHashCode()
         {
             return HashCode.Combine(Client, Bank, Money, ExpirationDate, DepositInterest);
-        }
-
-        private double CalculateInterestAmount()
-        {
-            int regularDays = 30 - InterestsAmounts.Count;
-            double notRegularInterest = InterestsAmounts.Sum();
-            InterestAmount = ((DepositInterest / 365 * 0.01) * Money * regularDays) + notRegularInterest;
-            return InterestAmount;
         }
     }
 }
