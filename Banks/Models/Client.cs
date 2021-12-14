@@ -4,7 +4,7 @@ using Banks.Models.Accounts;
 
 namespace Banks.Models
 {
-    public class Client : IEquatable<Client>
+    public class Client
     {
         private Client(string firstName, string lastName, string homeAddress, uint passportNumber)
         {
@@ -44,26 +44,6 @@ namespace Banks.Models
         {
             string msg = $"${type} changed by {value}";
             return msg;
-        }
-
-        public bool Equals(Client other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return FirstName == other.FirstName && LastName == other.LastName && HomeAddress == other.HomeAddress && PassportNumber == other.PassportNumber;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((Client)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(FirstName, LastName, HomeAddress, PassportNumber);
         }
 
         public ClientBuilder ToBuild()

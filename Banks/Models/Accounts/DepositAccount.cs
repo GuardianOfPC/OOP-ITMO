@@ -5,7 +5,7 @@ using Banks.Interfaces;
 
 namespace Banks.Models.Accounts
 {
-    public class DepositAccount : IAccount, IEquatable<DepositAccount>
+    public class DepositAccount : IAccount
     {
         public DepositAccount(Client client, Bank bank, int expirationDate, double depositAmount)
         {
@@ -77,26 +77,6 @@ namespace Banks.Models.Accounts
         public void ChargeCommission()
         {
             throw new NotImplementedException();
-        }
-
-        public bool Equals(DepositAccount other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return Equals(Client, other.Client) && Equals(Bank, other.Bank) && Money.Equals(other.Money) && ExpirationDate == other.ExpirationDate && DepositInterest.Equals(other.DepositInterest);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((DepositAccount)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Client, Bank, Money, ExpirationDate, DepositInterest);
         }
     }
 }

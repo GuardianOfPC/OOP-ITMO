@@ -1,6 +1,6 @@
 ﻿namespace Banks.Models
 {
-    public enum AccountType
+    public enum AccountTypes
     {
         /// <summary>
         /// Represents a dog.

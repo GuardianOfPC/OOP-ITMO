@@ -92,27 +92,27 @@ namespace Banks
                                 Console.WriteLine("2. Deposit");
                                 Console.WriteLine("3. Credit");
                                 Console.Write("Enter account type: ");
-                                AccountType type;
+                                AccountTypes types;
                                 string typeChoice = Console.ReadLine();
                                 switch (typeChoice)
                                 {
                                     case "1":
-                                        type = AccountType.Debit;
-                                        ourBank.OpenAccount(client, type, default, default);
+                                        types = AccountTypes.Debit;
+                                        ourBank.OpenAccount(client, types, default, default);
                                         break;
                                     case "2":
-                                        type = AccountType.Deposit;
+                                        types = AccountTypes.Deposit;
                                         Console.WriteLine("Enter expiration date (days): ");
                                         int days = Convert.ToInt32(Console.ReadLine());
                                         Console.WriteLine("Enter deposit amount: ");
                                         double amount = Convert.ToDouble(Console.ReadLine());
-                                        ourBank.OpenAccount(client, type, days, amount);
+                                        ourBank.OpenAccount(client, types, days, amount);
                                         break;
                                     case "3":
-                                        type = AccountType.Credit;
+                                        types = AccountTypes.Credit;
                                         Console.WriteLine("Enter credit limit: ");
                                         double limit = Convert.ToDouble(Console.ReadLine());
-                                        ourBank.OpenAccount(client, type, default, limit);
+                                        ourBank.OpenAccount(client, types, default, limit);
                                         break;
                                     default:
                                         throw new Exception("Invalid argument");

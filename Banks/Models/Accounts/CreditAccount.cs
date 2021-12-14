@@ -4,7 +4,7 @@ using Banks.Interfaces;
 
 namespace Banks.Models.Accounts
 {
-    public class CreditAccount : IAccount, IEquatable<CreditAccount>
+    public class CreditAccount : IAccount
     {
         public CreditAccount(Client client, Bank bank, double limit)
         {
@@ -64,26 +64,6 @@ namespace Banks.Models.Accounts
             if (!(Money < 0)) return;
             double commissionFinal = (Bank.CommissionRate * 0.01) * Math.Abs(Money);
             Money -= commissionFinal;
-        }
-
-        public bool Equals(CreditAccount other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return Equals(Client, other.Client) && Equals(Bank, other.Bank) && Money.Equals(other.Money) && CreditLimit.Equals(other.CreditLimit);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((CreditAccount)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Client, Bank, Money, CreditLimit);
         }
     }
 }
