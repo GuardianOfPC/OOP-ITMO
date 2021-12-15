@@ -4,14 +4,13 @@ namespace Banks.Models
 {
     public class TransactionLog
     {
-        public TransactionLog(IAccount accountFrom, IAccount accountTo, Bank bankFrom, Bank bankTo, double amount, TransactionTypes type)
+        public TransactionLog(IAccount accountFrom, IAccount accountTo, Bank bankFrom, Bank bankTo, double amount)
         {
             AccountFrom = accountFrom;
             AccountTo = accountTo;
             BankFrom = bankFrom;
             BankTo = bankTo;
             Amount = amount;
-            Type = type;
         }
 
         public IAccount AccountFrom { get; set; }
@@ -19,6 +18,5 @@ namespace Banks.Models
         public Bank BankFrom { get; }
         public Bank BankTo { get; }
         public double Amount { get; }
-        public TransactionTypes Type { get; }
     }
 }

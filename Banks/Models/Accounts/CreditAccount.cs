@@ -26,14 +26,14 @@ namespace Banks.Models.Accounts
             if (Money <= 0 && Math.Abs(Money - value) > CreditLimit) throw new Exception("Credit limit exceeded");
 
             Money -= value;
-            TransactionLog log = new (this, default, Bank, default, value, TransactionTypes.Withdraw);
+            TransactionLog log = new (this, default, Bank, default, value);
             Bank.CentralBank.AddLog(log);
         }
 
         public void RefillMoney(double value)
         {
             Money += value;
-            TransactionLog log = new (this, default, Bank, default, value, TransactionTypes.Refill);
+            TransactionLog log = new (this, default, Bank, default, value);
             Bank.CentralBank.AddLog(log);
         }
 
@@ -47,7 +47,7 @@ namespace Banks.Models.Accounts
             if (Money <= 0 && Math.Abs(Money - value) > CreditLimit) throw new Exception("Credit limit exceeded");
             Money -= value;
             Bank.CentralBank.TransferMoneyAcrossBanks(account, bank, value);
-            TransactionLog log = new (this, account, Bank, bank, value, TransactionTypes.Transfer);
+            TransactionLog log = new (this, account, Bank, bank, value);
             Bank.CentralBank.AddLog(log);
             return log;
         }
