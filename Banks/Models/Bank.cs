@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Banks.Interfaces;
 using Banks.Models.Accounts;
@@ -85,53 +84,5 @@ namespace Banks.Models
             TransferLimit = value;
             TransferLimitChanged?.Invoke(value, BankPolicyChangeTypes.TransferLimit);
         }
-
-        // public void CancellTransaction(TransactionLog log, CentralBank centralBank)
-        // {
-        //     TransactionLog neededLog = TransactionLogs.FirstOrDefault(l => l.Equals(log));
-        //     Bank bankFrom = centralBank.
-        // }
-        //
-        // public void CancelTransaction(TransactionLog log, CentralBank centralBank)
-        // {
-        //     switch (log.Type)
-        //     {
-        //         case TransactionTypes.Withdraw:
-        //         {
-        //             CancelingHandler(log.AccountFrom, log.BankFrom, log.Amount, centralBank, OperatorTypes.Plus);
-        //             log.BankFrom.TransactionLogs.Remove(log);
-        //             break;
-        //         }
-        //
-        //         case TransactionTypes.Refill:
-        //         {
-        //             CancelingHandler(log.AccountFrom, log.BankFrom, log.Amount, centralBank, OperatorTypes.Minus);
-        //             log.BankFrom.TransactionLogs.Remove(log);
-        //             break;
-        //         }
-        //
-        //         case TransactionTypes.Transfer:
-        //         {
-        //             CancelingHandler(log.AccountFrom, log.BankFrom, log.Amount, centralBank, OperatorTypes.Plus);
-        //             CancelingHandler(log.AccountTo, log.BankTo, log.Amount, centralBank, OperatorTypes.Minus);
-        //             log.BankFrom.TransactionLogs.Remove(log);
-        //             break;
-        //         }
-        //
-        //         default:
-        //             throw new ArgumentOutOfRangeException();
-        //     }
-        // }
-        //
-        // private void CancelingHandler(IAccount account, Bank bank, double amount, CentralBank centralBank, OperatorTypes type)
-        // {
-        //     Bank neededBank = centralBank.BankRepository.GetBank(bank);
-        //     List<IAccount> accounts = neededBank.Accounts;
-        //     IAccount neededAccount = accounts.Find(x => x.Equals(account));
-        //     if (type == OperatorTypes.Plus) neededAccount.Money += amount;
-        //     if (type == OperatorTypes.Minus) neededAccount.Money -= amount;
-        //     accounts.Add(neededAccount);
-        //     centralBank.BankRepository.UpdateBankAccounts(neededBank, accounts);
-        // }
     }
 }
