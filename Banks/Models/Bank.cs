@@ -60,8 +60,7 @@ namespace Banks.Models
         {
             foreach (IAccount account in Accounts)
             {
-                if (account is DebitAccount) account.AddInterest();
-                if (account is DepositAccount) account.AddInterest();
+                account.AddInterest();
             }
         }
 
@@ -75,7 +74,7 @@ namespace Banks.Models
         {
             foreach (IAccount account in Accounts)
             {
-                if (account is CreditAccount) account.ChargeCommission();
+                account.ChargeCommission();
             }
         }
 

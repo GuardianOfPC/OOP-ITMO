@@ -8,8 +8,6 @@ namespace Banks.Models
     {
         private Client(string firstName, string lastName, string homeAddress, uint passportNumber)
         {
-            if (homeAddress == string.Empty || passportNumber == 0) SuspiciousAccountFlag = true;
-            else SuspiciousAccountFlag = false;
             FirstName = firstName;
             LastName = lastName;
             HomeAddress = homeAddress;
@@ -26,8 +24,6 @@ namespace Banks.Models
 
         public uint PassportNumber { get; }
 
-        public bool SuspiciousAccountFlag { get; }
-
         public void SubscribeToBankPolicyChanges(Bank bank)
         {
             if (bank.Accounts.Exists(account => account.Client.Equals(this) && account is DebitAccount))
@@ -36,7 +32,7 @@ namespace Banks.Models
                 bank.DepositInterestsRatesChanged += BankPolicyChangeNotification;
             if (bank.Accounts.Exists(account => account.Client.Equals(this) && account is CreditAccount))
                 bank.CommissionRateChanged += BankPolicyChangeNotification;
-            if (SuspiciousAccountFlag)
+            if (PassportNumber == 0 || HomeAddress == string.Empty)
                 bank.TransferLimitChanged += BankPolicyChangeNotification;
         }
 

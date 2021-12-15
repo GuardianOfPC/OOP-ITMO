@@ -19,7 +19,7 @@ namespace Banks.Models.Accounts
         private List<double> InterestsAmounts { get; } = new ();
         public void WithdrawMoney(double value)
         {
-            if (Client.SuspiciousAccountFlag)
+            if (Client.PassportNumber == 0 || Client.HomeAddress == string.Empty)
             {
                 if (value > Bank.TransferLimit) throw new Exception("Transfer limit exceeded");
             }
@@ -42,7 +42,7 @@ namespace Banks.Models.Accounts
         public TransactionLog TransferMoney(IAccount account, Bank bank, double value)
         {
             if (Money - value < 0) throw new Exception("Couldn't withdraw money - will be broke");
-            if (Client.SuspiciousAccountFlag)
+            if (Client.PassportNumber == 0 || Client.HomeAddress == string.Empty)
             {
                 if (value > Bank.TransferLimit) throw new Exception("Transfer limit exceeded");
             }

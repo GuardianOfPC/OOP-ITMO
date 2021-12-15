@@ -30,7 +30,7 @@ namespace Banks.Models.Accounts
         {
             if (Bank.CentralBank.DaysFromCentralBankCreation < ExpirationDate)
                 throw new Exception("Cannot withdraw until expiration date");
-            if (Client.SuspiciousAccountFlag)
+            if (Client.PassportNumber == 0 || Client.HomeAddress == string.Empty)
             {
                 if (value > Bank.TransferLimit) throw new Exception("Transfer limit exceeded");
             }
@@ -53,7 +53,7 @@ namespace Banks.Models.Accounts
         {
             if (Bank.CentralBank.DaysFromCentralBankCreation < ExpirationDate)
                 throw new Exception("Cannot withdraw until expiration date");
-            if (Client.SuspiciousAccountFlag)
+            if (Client.PassportNumber == 0 || Client.HomeAddress == string.Empty)
             {
                 if (value > Bank.TransferLimit) throw new Exception("Transfer limit exceeded");
             }

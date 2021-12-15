@@ -18,7 +18,7 @@ namespace Banks.Models.Accounts
         public double CreditLimit { get; }
         public void WithdrawMoney(double value)
         {
-            if (Client.SuspiciousAccountFlag)
+            if (Client.PassportNumber == 0 || Client.HomeAddress == string.Empty)
             {
                 if (value > Bank.TransferLimit) throw new Exception("Transfer limit exceeded");
             }
@@ -39,7 +39,7 @@ namespace Banks.Models.Accounts
 
         public TransactionLog TransferMoney(IAccount account, Bank bank, double value)
         {
-            if (Client.SuspiciousAccountFlag)
+            if (Client.PassportNumber == 0 || Client.HomeAddress == string.Empty)
             {
                 if (value > Bank.TransferLimit) throw new Exception("Transfer limit exceeded");
             }
