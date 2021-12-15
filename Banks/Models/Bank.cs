@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Banks.Interfaces;
 using Banks.Models.Accounts;
 
@@ -7,10 +8,9 @@ namespace Banks.Models
 {
     public class Bank
     {
-        public Bank(string name, IAccountFactory accountFactory)
+        public Bank(string name)
         {
             BankName = name;
-            AccountFactory = accountFactory;
         }
 
         public delegate void AccountHandler();
@@ -21,8 +21,6 @@ namespace Banks.Models
         public CentralBank CentralBank { get; set; }
         public List<Client> Clients { get; } = new ();
         public List<IAccount> Accounts { get; set; } = new ();
-        public List<TransactionLog> TransactionLogs { get; } = new ();
-        public IAccountFactory AccountFactory { get; }
         public Dictionary<double, int> DepositInterests { get; private set; }
         public string BankName { get; }
         public double DebitInterestRate { get; private set; }
@@ -35,14 +33,13 @@ namespace Banks.Models
             CentralBank.ChargeCommission += ChargeCommissionsFromAccounts;
         }
 
+        public IAccount GetAccount(IAccount account) => Accounts.FirstOrDefault(a => a.Equals(account));
+
         public void RegisterClient(Client client) => Clients.Add(client);
 
-        public IAccount OpenAccount(Client client, AccountTypes types, int expirationDate, double amount)
+        public IAccount OpenAccount(Client client, IAccountFactory factory, int expirationDate, double amount)
         {
-            if (types == AccountTypes.Debit) return AccountFactory.OpenDebitAccount(client, this);
-            if (types == AccountTypes.Deposit) return AccountFactory.OpenDepositAccount(client, this, expirationDate, amount);
-            if (types == AccountTypes.Credit) return AccountFactory.OpenCreditAccount(client, this, amount);
-            return null;
+            return factory.OpenAccount(client, this, expirationDate, amount);
         }
 
         public void ChangeDebitInterestRate(double value)
@@ -89,46 +86,52 @@ namespace Banks.Models
             TransferLimitChanged?.Invoke(value, BankPolicyChangeTypes.TransferLimit);
         }
 
-        public void CancelTransaction(TransactionLog log, CentralBank centralBank)
-        {
-            switch (log.Type)
-            {
-                case TransactionTypes.Withdraw:
-                {
-                    CancelingHandler(log.AccountFrom, log.BankFrom, log.Amount, centralBank, OperatorTypes.Plus);
-                    log.BankFrom.TransactionLogs.Remove(log);
-                    break;
-                }
-
-                case TransactionTypes.Refill:
-                {
-                    CancelingHandler(log.AccountFrom, log.BankFrom, log.Amount, centralBank, OperatorTypes.Minus);
-                    log.BankFrom.TransactionLogs.Remove(log);
-                    break;
-                }
-
-                case TransactionTypes.Transfer:
-                {
-                    CancelingHandler(log.AccountFrom, log.BankFrom, log.Amount, centralBank, OperatorTypes.Plus);
-                    CancelingHandler(log.AccountTo, log.BankTo, log.Amount, centralBank, OperatorTypes.Minus);
-                    log.BankFrom.TransactionLogs.Remove(log);
-                    break;
-                }
-
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        private void CancelingHandler(IAccount account, Bank bank, double amount, CentralBank centralBank, OperatorTypes type)
-        {
-            Bank neededBank = centralBank.BankRepository.GetBank(bank);
-            List<IAccount> accounts = neededBank.Accounts;
-            IAccount neededAccount = accounts.Find(x => x.Equals(account));
-            if (type == OperatorTypes.Plus) neededAccount.Money += amount;
-            if (type == OperatorTypes.Minus) neededAccount.Money -= amount;
-            accounts.Add(neededAccount);
-            centralBank.BankRepository.UpdateBankAccounts(neededBank, accounts);
-        }
+        // public void CancellTransaction(TransactionLog log, CentralBank centralBank)
+        // {
+        //     TransactionLog neededLog = TransactionLogs.FirstOrDefault(l => l.Equals(log));
+        //     Bank bankFrom = centralBank.
+        // }
+        //
+        // public void CancelTransaction(TransactionLog log, CentralBank centralBank)
+        // {
+        //     switch (log.Type)
+        //     {
+        //         case TransactionTypes.Withdraw:
+        //         {
+        //             CancelingHandler(log.AccountFrom, log.BankFrom, log.Amount, centralBank, OperatorTypes.Plus);
+        //             log.BankFrom.TransactionLogs.Remove(log);
+        //             break;
+        //         }
+        //
+        //         case TransactionTypes.Refill:
+        //         {
+        //             CancelingHandler(log.AccountFrom, log.BankFrom, log.Amount, centralBank, OperatorTypes.Minus);
+        //             log.BankFrom.TransactionLogs.Remove(log);
+        //             break;
+        //         }
+        //
+        //         case TransactionTypes.Transfer:
+        //         {
+        //             CancelingHandler(log.AccountFrom, log.BankFrom, log.Amount, centralBank, OperatorTypes.Plus);
+        //             CancelingHandler(log.AccountTo, log.BankTo, log.Amount, centralBank, OperatorTypes.Minus);
+        //             log.BankFrom.TransactionLogs.Remove(log);
+        //             break;
+        //         }
+        //
+        //         default:
+        //             throw new ArgumentOutOfRangeException();
+        //     }
+        // }
+        //
+        // private void CancelingHandler(IAccount account, Bank bank, double amount, CentralBank centralBank, OperatorTypes type)
+        // {
+        //     Bank neededBank = centralBank.BankRepository.GetBank(bank);
+        //     List<IAccount> accounts = neededBank.Accounts;
+        //     IAccount neededAccount = accounts.Find(x => x.Equals(account));
+        //     if (type == OperatorTypes.Plus) neededAccount.Money += amount;
+        //     if (type == OperatorTypes.Minus) neededAccount.Money -= amount;
+        //     accounts.Add(neededAccount);
+        //     centralBank.BankRepository.UpdateBankAccounts(neededBank, accounts);
+        // }
     }
 }

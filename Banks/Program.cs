@@ -27,7 +27,7 @@ namespace Banks
                         Console.WriteLine("Enter bank name: ");
                         string name = Console.ReadLine();
 
-                        Bank bank = new (name, new AccountFactory());
+                        Bank bank = new (name);
                         centralBank.RegisterBank(bank);
 
                         Console.WriteLine("Enter debit interest rate: ");
@@ -92,27 +92,23 @@ namespace Banks
                                 Console.WriteLine("2. Deposit");
                                 Console.WriteLine("3. Credit");
                                 Console.Write("Enter account type: ");
-                                AccountTypes types;
                                 string typeChoice = Console.ReadLine();
                                 switch (typeChoice)
                                 {
                                     case "1":
-                                        types = AccountTypes.Debit;
-                                        ourBank.OpenAccount(client, types, default, default);
+                                        ourBank.OpenAccount(client, new DebitAccountFactory(), default, default);
                                         break;
                                     case "2":
-                                        types = AccountTypes.Deposit;
                                         Console.WriteLine("Enter expiration date (days): ");
                                         int days = Convert.ToInt32(Console.ReadLine());
                                         Console.WriteLine("Enter deposit amount: ");
                                         double amount = Convert.ToDouble(Console.ReadLine());
-                                        ourBank.OpenAccount(client, types, days, amount);
+                                        ourBank.OpenAccount(client, new DepositAccountFactory(), days, amount);
                                         break;
                                     case "3":
-                                        types = AccountTypes.Credit;
                                         Console.WriteLine("Enter credit limit: ");
                                         double limit = Convert.ToDouble(Console.ReadLine());
-                                        ourBank.OpenAccount(client, types, default, limit);
+                                        ourBank.OpenAccount(client, new CreditAccountFactory(), default, limit);
                                         break;
                                     default:
                                         throw new Exception("Invalid argument");

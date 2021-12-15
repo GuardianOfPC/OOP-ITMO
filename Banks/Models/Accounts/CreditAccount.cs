@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Banks.Interfaces;
 
 namespace Banks.Models.Accounts
@@ -17,7 +16,6 @@ namespace Banks.Models.Accounts
         public Bank Bank { get; }
         public double Money { get; set; }
         public double CreditLimit { get; }
-
         public void WithdrawMoney(double value)
         {
             if (Client.SuspiciousAccountFlag)
@@ -29,14 +27,14 @@ namespace Banks.Models.Accounts
 
             Money -= value;
             TransactionLog log = new (this, default, Bank, default, value, TransactionTypes.Withdraw);
-            Bank.TransactionLogs.Add(log);
+            Bank.CentralBank.AddLog(log);
         }
 
         public void RefillMoney(double value)
         {
             Money += value;
             TransactionLog log = new (this, default, Bank, default, value, TransactionTypes.Refill);
-            Bank.TransactionLogs.Add(log);
+            Bank.CentralBank.AddLog(log);
         }
 
         public TransactionLog TransferMoney(IAccount account, Bank bank, double value)
@@ -50,13 +48,13 @@ namespace Banks.Models.Accounts
             Money -= value;
             Bank.CentralBank.TransferMoneyAcrossBanks(account, bank, value);
             TransactionLog log = new (this, account, Bank, bank, value, TransactionTypes.Transfer);
-            Bank.TransactionLogs.Add(log);
+            Bank.CentralBank.AddLog(log);
             return log;
         }
 
         public void AddInterest()
         {
-            throw new NotImplementedException();
+            // Empty by design
         }
 
         public void ChargeCommission()

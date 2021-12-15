@@ -27,7 +27,7 @@ namespace Banks.Models.Accounts
             if (Money - value < 0) throw new Exception("Couldn't withdraw money - will be broke");
             Money -= value;
             TransactionLog log = new (this, default, Bank, default, value, TransactionTypes.Withdraw);
-            Bank.TransactionLogs.Add(log);
+            Bank.CentralBank.AddLog(log);
             InterestsAmounts.Add((Bank.DebitInterestRate / 365 * 0.01) * Money);
         }
 
@@ -35,7 +35,7 @@ namespace Banks.Models.Accounts
         {
             Money += value;
             TransactionLog log = new (this, default, Bank, default, value, TransactionTypes.Refill);
-            Bank.TransactionLogs.Add(log);
+            Bank.CentralBank.AddLog(log);
             InterestsAmounts.Add(((Bank.DebitInterestRate / 365) * 0.01) * Money);
         }
 
@@ -50,7 +50,7 @@ namespace Banks.Models.Accounts
             Money -= value;
             Bank.CentralBank.TransferMoneyAcrossBanks(account, bank, value);
             TransactionLog log = new (this, account, Bank, bank, value, TransactionTypes.Transfer);
-            Bank.TransactionLogs.Add(log);
+            Bank.CentralBank.AddLog(log);
             InterestsAmounts.Add((Bank.DebitInterestRate / 365 * 0.01) * Money);
             return log;
         }
@@ -65,7 +65,7 @@ namespace Banks.Models.Accounts
 
         public void ChargeCommission()
         {
-            throw new NotImplementedException();
+            // Empty by design
         }
     }
 }

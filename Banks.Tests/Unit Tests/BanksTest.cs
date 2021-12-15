@@ -26,10 +26,10 @@ namespace Banks.Tests.Unit_Tests
                 .WithHomeAddress("SPB")
                 .WithPassportNumber(228)
                 .Build();
-            Bank bank = new("Sber", new AccountFactory());
+            Bank bank = new("Sber");
             bank = _centralBank.RegisterBank(bank);
             bank.RegisterClient(client);
-            var account = bank.OpenAccount(client, AccountTypes.Debit, default, default) as DebitAccount;
+            var account = bank.OpenAccount(client, new DebitAccountFactory(), default, default) as DebitAccount;
             account?.RefillMoney(1000);
             Assert.AreEqual(1000,account.Money);
             Assert.Catch<Exception>(() => account.WithdrawMoney(9000));
@@ -42,11 +42,11 @@ namespace Banks.Tests.Unit_Tests
                 .WithFirstName("Alexey")
                 .WithLastName("Odinochenko")
                 .Build();
-            Bank bank = new("Sber", new AccountFactory());
+            Bank bank = new("Sber");
             bank = _centralBank.RegisterBank(bank);
             bank.RegisterClient(client);
             bank.ChangeTransferLimit(900);
-            var account = bank.OpenAccount(client, AccountTypes.Debit, default, default) as DebitAccount;
+            var account = bank.OpenAccount(client, new DebitAccountFactory(), default, default) as DebitAccount;
             account.RefillMoney(1000);
             Assert.Catch<Exception>(() => account.WithdrawMoney(901));
         }
@@ -66,23 +66,23 @@ namespace Banks.Tests.Unit_Tests
                 .WithHomeAddress("LA")
                 .WithPassportNumber(81)
                 .Build();
-            Bank bank1 = new("Sber", new AccountFactory());
-            Bank bank2 = new("American Bank", new AccountFactory());
+            Bank bank1 = new("Sber");
+            Bank bank2 = new("American Bank");
             bank1 = _centralBank.RegisterBank(bank1);
             bank2 = _centralBank.RegisterBank(bank2);
             bank1.RegisterClient(client1);
             bank2.RegisterClient(client2);
             
-            var account1 = bank1.OpenAccount(client1, AccountTypes.Debit, default, default) as DebitAccount;
+            var account1 = bank1.OpenAccount(client1, new DebitAccountFactory(), default, default) as DebitAccount;
             account1?.RefillMoney(1000);
             
-            var account2 = bank2.OpenAccount(client2, AccountTypes.Debit, default, default) as DebitAccount;
+            var account2 = bank2.OpenAccount(client2, new DebitAccountFactory(), default, default) as DebitAccount;
             account2?.RefillMoney(1000);
             
             TransactionLog log = account1.TransferMoney(account2, bank2, 500);
             Assert.AreEqual(500,account1.Money);
             Assert.AreEqual(1500,account2.Money);
-            bank1.CancelTransaction(log, _centralBank);
+            _centralBank.CancelTransaction(log);
             Assert.AreEqual(1000,account1.Money);
             Assert.AreEqual(1000,account2.Money);
         } 
@@ -96,10 +96,10 @@ namespace Banks.Tests.Unit_Tests
                 .WithHomeAddress("SPB")
                 .WithPassportNumber(228)
                 .Build();
-            Bank bank = new("Sber", new AccountFactory());
+            Bank bank = new("Sber");
             bank = _centralBank.RegisterBank(bank);
             bank.RegisterClient(client);
-            var account = bank.OpenAccount(client, AccountTypes.Debit, default, default) as DebitAccount;
+            var account = bank.OpenAccount(client, new DebitAccountFactory(), default, default) as DebitAccount;
             bank.ChangeDebitInterestRate(3.65);
             account.RefillMoney(100000);
             Assert.AreEqual(100000,account.Money);
@@ -116,7 +116,7 @@ namespace Banks.Tests.Unit_Tests
                 .WithHomeAddress("SPB")
                 .WithPassportNumber(228)
                 .Build();
-            Bank bank = new("Sber", new AccountFactory());
+            Bank bank = new("Sber");
             Dictionary<double, int> depoInt = new ()
             {
                 {2, 50000},
@@ -126,7 +126,7 @@ namespace Banks.Tests.Unit_Tests
             bank = _centralBank.RegisterBank(bank);
             bank.RegisterClient(client);
             bank.ChangeDepositInterestsRate(depoInt);
-            var account = bank.OpenAccount(client, AccountTypes.Deposit, 20, 100000);
+            var account = bank.OpenAccount(client, new DepositAccountFactory(), 20, 100000);
             _centralBank.ForwardTime(30);
             Assert.AreEqual(100300, account.Money);
         }
@@ -140,11 +140,11 @@ namespace Banks.Tests.Unit_Tests
                 .WithHomeAddress("SPB")
                 .WithPassportNumber(228)
                 .Build();
-            Bank bank = new("Sber", new AccountFactory());
+            Bank bank = new("Sber");
             bank = _centralBank.RegisterBank(bank);
             bank.RegisterClient(client);
             bank.ChangeCommissionRate(3);
-            var account = bank.OpenAccount(client, AccountTypes.Credit, default, 200);
+            var account = bank.OpenAccount(client, new CreditAccountFactory(), default, 200);
             account.RefillMoney(100);
             Assert.AreEqual(100,account.Money);
             account.WithdrawMoney(200);
@@ -162,10 +162,10 @@ namespace Banks.Tests.Unit_Tests
                 .WithHomeAddress("SPB")
                 .WithPassportNumber(228)
                 .Build();
-            Bank bank = new("Sber", new AccountFactory());
+            Bank bank = new("Sber");
             bank = _centralBank.RegisterBank(bank);
             bank.RegisterClient(client);
-            var account = bank.OpenAccount(client, AccountTypes.Credit, default, 200);
+            var account = bank.OpenAccount(client, new CreditAccountFactory(), default, 200);
             Assert.Catch<Exception>(() => account.WithdrawMoney(201));
         } 
     }
